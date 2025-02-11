@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -17,6 +18,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax motor2;
     private final RelativeEncoder encoder;
     private final PIDController pidController;
+    Ultrasonic sensor = new Ultrasonic(null, null);
 
     private static final double kMaxHeight = 100.0; // Example max height in encoder ticks
     private static final double kMinHeight = 0.0;
@@ -63,10 +65,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setPosition(double targetPosition) {
+        //TargetPosition MUST BE IN INCHES!!!!!
+        //motor1.set(pidController.calculate(encoder.getPosition(),targetPosition));
         targetPosition = Math.max(kMinHeight, Math.min(kMaxHeight, targetPosition)); // Constrain position. Stupidity protection!
 
-
-        double speed = pidController.calculate(encoder.getPosition(), targetPosition); // PID output. Lit so simple. Returns a percentage of voltage I thinks
+        //Make sure the sensor is ON the carriage!!
+        double speed = pidController.calculate(sensor.getRangeInches(), targetPosition); // PID output. Lit so simple. Returns a percentage of voltage I thinks
 
         speed = Math.max(-0.5, Math.min(0.5, speed)); // Limit motor speed between 0.5 and -0.5. Not tryna hurt my computer
 
@@ -97,6 +101,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public double getPosition() {  //so that I can make kMaxHeight work in the future
-        return encoder.getPosition();
+        return sensor.getRangeInches();
     }
 }
