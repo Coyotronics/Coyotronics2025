@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 //import com.pathplanner.lib.auto.NamedCommands;
 
@@ -39,11 +41,16 @@ public class RobotContainer {
     // The robot's subsystems
     private final DriveSubsystem robot_drive = new DriveSubsystem();
 
+    private final ElevatorSubsystem elevator = new ElevatorSubsystem(0, 0);
+
     // The driver's controller
     XboxController driver_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
 
     // 2nd Drivers's Controller
     XboxController mani_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT1); // Check ports
+
+    //The button board
+    private final Joystick buttonBoard = new Joystick(0);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -81,6 +88,17 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+        // Map button board buttons to preset elevator positions
+        new Trigger(() -> buttonBoard.getRawButton(1)) // Button 1
+            .onTrue(new SetElevatorPositionCommand(elevator, 10.0)); // Move to position 10
+
+        new Trigger(() -> buttonBoard.getRawButton(2)) //Button 2
+            .onTrue(new SetElevatorPositionCommand(elevator, 50.0)); // Move to position 50
+
+        new Trigger( () -> buttonBoard.getRawButton(3) ) // Button 3
+            .onTrue(new SetElevatorPositionCommand(elevator, 100.0)); // Move to max height
+        //target positions have to be in inches. Make sure to measure for these
+
     }
 
     /**
