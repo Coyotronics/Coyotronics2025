@@ -92,19 +92,21 @@ public class RobotContainer {
         try {
 
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-        new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
-        new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
-);
+                    robot_drive.get_pose(),
+                    new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
 
-            PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
+            PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints
+                                                                                                   // for this path.
             PathPlannerPath path3 = new PathPlannerPath(
-        waypoints,
-        constraints,
-        null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-);
-            
+                    waypoints,
+                    constraints,
+                    null, // The ideal starting state, this is only relevant for pre-planned paths, so can
+                          // be null for on-the-fly paths.
+                    new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic
+                                                                       // rotation here. If using a differential
+                                                                       // drivetrain, the rotation will have no effect.
+            );
+
             // Load the path you want to follow using its name in the GUI
             PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
 
