@@ -23,8 +23,9 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.robot.subsystems.Elevator;
 //import com.pathplanner.lib.auto.NamedCommands;
 
 /*
@@ -35,12 +36,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 
 public class RobotContainer {
+    
+
     static boolean field_centric = true;
     // The robot's subsystems
     private final DriveSubsystem robot_drive = new DriveSubsystem();
-
+    private final Elevator elevator = new Elevator();
     // The driver's controller
-    XboxController driver_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
+   // XboxController driver_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
+    private final CommandXboxController driver_controller = new CommandXboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
 
     // 2nd Drivers's Controller
     XboxController mani_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT1); // Check ports
@@ -81,6 +85,9 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
+        //Pray this works
+        driver_controller.a().whileTrue(elevator.manualControlUp());
+        driver_controller.b().whileTrue(elevator.manualControlDown());
     }
 
     /**
@@ -114,7 +121,7 @@ public class RobotContainer {
             // event markers.
             return AutoBuilder.followPath(path3);
         } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+           DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
             return Commands.none();
         }
     }
