@@ -21,6 +21,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.subsystems.DriveSubsystem;
+//Package imports are the other 2
+import frc.robot.subsystems.*;
+import frc.robot.ManualCommands.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -76,6 +79,10 @@ public class RobotContainer {
                                 field_centric, true),
 
                         robot_drive));
+
+        //Code to make elevator work with joystick
+        //I could've done this with a lambda but I didn't
+        elevator.setDefaultCommand(new ManualElevatorCommand(elevator, driver_controller, XboxController.Axis.kLeftY.value));
     }
 
     /**
