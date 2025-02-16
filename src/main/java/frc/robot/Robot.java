@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 
 public class Robot extends TimedRobot {
-    static int counter1 = 0;
     private Command autonomous_command;
 
     private RobotContainer robot_container;
@@ -74,17 +73,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        System.out.println("This method has run");
         autonomous_command = robot_container.getAutonomousCommand();
-
-        /*
-         * String autoSelected = SmartDashboard.getString("Auto Selector",
-         * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-         * = new MyAutoCommand(); break; case "Default Auto": default:
-         * autonomousCommand = new ExampleCommand(); break; }
-         */
-
-        // schedule the autonomous command (example)
+        
         if (autonomous_command != null) {
             autonomous_command.schedule();
         }
@@ -93,9 +83,7 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        counter1++;
-        System.out.println("THIS IS RUNNING");
-        System.out.println("NUM " + counter1);
+
     }
 
     @Override

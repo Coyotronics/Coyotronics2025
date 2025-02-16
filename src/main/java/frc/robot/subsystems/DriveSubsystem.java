@@ -4,7 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.controllers.PPLTVController;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -209,6 +208,9 @@ public class DriveSubsystem extends SubsystemBase {
             y_speed_commanded = y_speed;
             current_rotation = rotation;
         }
+
+        SmartDashboard.putNumber("front left driving", front_left.get_volatge_driving());
+        SmartDashboard.putNumber("front left turning", front_left.get_voltage_turning());
 
         double x_speed_delivered = x_speed_commanded * RobotMeasurements.MAX_SPEED_METERS_PER_SECOND;
         double y_speed_delivered = y_speed_commanded * RobotMeasurements.MAX_SPEED_METERS_PER_SECOND;

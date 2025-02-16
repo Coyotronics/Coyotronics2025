@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -26,25 +25,15 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Elevator;
-//import com.pathplanner.lib.auto.NamedCommands;
-
-/*
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
- */
 
 public class RobotContainer {
-    
-
     static boolean field_centric = true;
-    // The robot's subsystems
+
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
-    // The driver's controller
-   // XboxController driver_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
-    private final CommandXboxController driver_controller = new CommandXboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
+
+    private final CommandXboxController driver_controller = new CommandXboxController(
+            JoystickConstants.DRIVER_CONTROLLER_PORT);
 
     // 2nd Drivers's Controller
     XboxController mani_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT1); // Check ports
@@ -85,7 +74,6 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        //Pray this works
         driver_controller.a().whileTrue(elevator.manualControlUp());
         driver_controller.b().whileTrue(elevator.manualControlDown());
     }
@@ -121,7 +109,7 @@ public class RobotContainer {
             // event markers.
             return AutoBuilder.followPath(path3);
         } catch (Exception e) {
-           DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
             return Commands.none();
         }
     }

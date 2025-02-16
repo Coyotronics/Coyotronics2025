@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -9,19 +12,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    /** Creates a new ExampleSubsystem. */
-    SparkMax motor1 = new SparkMax(0, MotorType.kBrushless);
-    SparkMax motor2 = new SparkMax(1, MotorType.kBrushless);
+    SparkMax motor1;
+    SparkMax motor2;
+
     PIDController pid = new PIDController(0.02, 0.02, 0.02);
 
     public Elevator() {
+        motor1 = new SparkMax(5, MotorType.kBrushless);
+        motor2 = new SparkMax(6, MotorType.kBrushless);
+
         SparkMaxConfig config1 = new SparkMaxConfig();
         SparkMaxConfig config2 = new SparkMaxConfig();
-        config1.follow(1);
-        config2.inverted(true);
-        motor1.configure(config1, null, null);
-        motor2.configure(config2, null, null);
+        
+        config1.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
+        config2.smartCurrentLimit(15).inverted(true).idleMode(IdleMode.kBrake);
 
+        motor1.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /**
@@ -45,35 +52,38 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command manualControlUp() {
+
         return runOnce(
-            () -> {
-                // motor2.set(pid.calculate(sensor.getRangeInches(), setpoint));
-                motor1.setVoltage(1);
-            }
-        );
+                () -> {
+                    motor1.setVoltage(4);
+                    motor2.setVoltage(4);
+                });
     }
 
     public Command manualControlDown() {
         return runOnce(
                 () -> {
-                    // motor2.set(pid.calculate(sensor.getRangeInches(), setpoint));
-                    motor1.setVoltage(-1);
+                    motor1.setVoltage(-4);
+                    motor2.setVoltage(-4);
+                });
+    }
+
+    public Command test() {
+        return runOnce(
+                () -> {
+                    System.out.println("Some xbox key was pressed");
                 });
     }
 
     public boolean exampleCondition() {
-        // Query some boolean state, such as a digital sensor.
         return false;
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-
     }
 
     @Override
     public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
     }
 }
