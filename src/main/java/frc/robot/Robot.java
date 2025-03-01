@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 
+ //Motor1 should be negative
+ //Motor2 should be positive
+
 public class Robot extends TimedRobot {
     private Command autonomous_command;
 
