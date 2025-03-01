@@ -11,10 +11,11 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     static boolean field_centric = true;
-
+    private final Intake intake = new Intake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
