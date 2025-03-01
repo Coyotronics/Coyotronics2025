@@ -25,10 +25,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     static boolean field_centric = true;
-
+    private final Intake intake = new Intake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
