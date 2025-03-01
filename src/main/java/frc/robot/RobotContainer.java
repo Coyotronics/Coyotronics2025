@@ -57,20 +57,32 @@ public class RobotContainer {
         // robot_drive));
     }
 
-
     private void configureButtonBindings() {
-        elevator.setDefaultCommand(new RunCommand(
+        intake.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (driver_controller.getRightBumperButton()) {
-                        elevator.move_up();
-                    } else if (driver_controller.getLeftBumperButton()) {
-                        elevator.move_down();
+                    if (driver_controller.getBButton()) {
+                        intake.algaeIntake();
+                    } else if (driver_controller.getXButton()) {
+                        intake.coralIntakeOn();
+                    } else if (driver_controller.getYButton()) {
+                        intake.coralIntakeOut();
                     } else if (driver_controller.getAButton()) {
-                        elevator.pid_control(30);
-                    } else {
-                        elevator.stop();
+                        intake.algaeOuttake();
                     }
-                }, elevator));
+                }, intake));
+
+        // elevator.setDefaultCommand(new RunCommand(
+        // () -> {
+        // if (driver_controller.getRightBumperButton()) {
+        // elevator.move_up();
+        // } else if (driver_controller.getLeftBumperButton()) {
+        // elevator.move_down();
+        // } else if (driver_controller.getAButton()) {
+        // elevator.pid_control(30);
+        // } else {
+        // elevator.stop();
+        // }
+        // }, elevator));
     }
 
     public Command getAutonomousCommand() {
