@@ -12,20 +12,26 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
     /** Creates a new ExampleSubsystem. */
+    SimpleMotorFeedforward feedForwardCalc = new SimpleMotorFeedforward(0.2, 0);
     SparkMax coralIntake = new SparkMax(36, MotorType.kBrushless);
     SparkMax coralIntakePivot = new SparkMax(7, MotorType.kBrushless);
+
     //SparkMax AlgaeIntakeMaster = new SparkMax(2, MotorType.kBrushless);
    // SparkMax AlgaeIntakeSlave = new SparkMax(3, MotorType.kBrushless);
     // Encoder throughBore = new Encoder(0, 0);
     PIDController pid = new PIDController(0.02, 0.02, 0.02);
+    public double kg = 1.0;
 
     public Intake() {
+
         SparkMaxConfig config1 = new SparkMaxConfig();
         SparkMaxConfig config2 = new SparkMaxConfig();
         SparkMaxConfig config3 = new SparkMaxConfig();
@@ -35,6 +41,7 @@ public class Intake extends SubsystemBase {
         coralIntakePivot.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
        // AlgaeIntakeMaster.configure(config3, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         //AlgaeIntakeSlave.configure(config4, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        coralIntakePivot.getEncoder().setPosition(0.0);
     }
 
     /**
@@ -79,9 +86,11 @@ public class Intake extends SubsystemBase {
         //AlgaeIntakeSlave.setVoltage(-1);
     }
 
-    // public void coralIntakePivot() {
-    //     coralIntakePivot.set(MathUtil.clamp(pid.calculate(throughBore.getDistance(), 0), 0.01, -0.01));
-    // }
+     public void coralIntakePivot() {
+         coralIntakePivot.set(MathUtil.clamp(pid.calculate(coralIntakePivot.getEncoder().getPosition()
+         ,8.0)+feedForwardCalc.calculate(coralIntakePivot.getEncoder().getVelocity())
+         , -0.5, 0.5));
+     }
 
     public boolean exampleCondition() {
         // Query some boolean state, such as a digital sensor.
@@ -90,8 +99,9 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("PID Control Value",pid.calculate(coralIntakePivot.getEncoder().getPosition()));
+        SmartDashboard.putNumber("Feedforward_Control_Value",feedForwardCalc.calculate(coralIntakePivot.getEncoder().getVelocity()));
         // This method will be called once per scheduler run
-
     }
 
     @Override
