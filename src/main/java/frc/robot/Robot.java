@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.RobotContainer;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -17,9 +17,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * build.gradle file in the
  * project.
  */
-
- //Motor1 should be negative
- //Motor2 should be positive
 
 public class Robot extends TimedRobot {
     private Command autonomous_command;
@@ -33,6 +30,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
@@ -103,6 +101,11 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+
+        if(autonomous_command!=null)
+        {
+
+        }
         // Periodic Methods (Not recommended for regular use)
         Telemetery.update();
     }
@@ -110,6 +113,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
+        
         CommandScheduler.getInstance().cancelAll();
     }
 
