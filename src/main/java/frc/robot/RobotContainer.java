@@ -9,10 +9,12 @@ import java.util.List;
 import javax.lang.model.util.ElementScanner14;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,8 +22,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.PathPlannerConstants;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -31,16 +35,18 @@ import frc.robot.subsystems.Intake;
 
 public class RobotContainer {
     static boolean field_centric = true;
-    private final Intake intake = new Intake();
+    private final CoralIntake coral_intake = new CoralIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
-    XboxController driver_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT);
+    XboxController driver_controller = new XboxController(0);
+    XboxController mani_controller = new XboxController(1); // Check ports
+
     public SendableChooser sendable_chooser = new SendableChooser();
-    XboxController mani_controller = new XboxController(JoystickConstants.DRIVER_CONTROLLER_PORT1); // Check ports
 
     @SuppressWarnings("unchecked")
     public RobotContainer() {
+        // Load in all sendable chooser options when the robot code is started
         sendable_chooser.addOption("Red_Reef_1", "Red_Reef_1");
         sendable_chooser.addOption("Red_Reef_2", "Red_Reef_2");
         sendable_chooser.addOption("Red_Reef_3", "Red_Reef_3");
@@ -69,55 +75,65 @@ public class RobotContainer {
             field_centric = !field_centric;
         }
 
-        configureButtonBindings();
-
         // Configure default commands
+        configureButtonBindings();
     }
 
     private void configureButtonBindings() {
-        robot_drive.setDefaultCommand(
-                new RunCommand(
-                        () -> robot_drive.drive(
-                                -MathUtil.applyDeadband(driver_controller.getLeftY(),
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getLeftX(),
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getRightX(),
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                field_centric, true),
-
-                        robot_drive));
-
-        intake.setDefaultCommand(new RunCommand(
-                () -> {
-                    if (driver_controller.getXButton()) {
-                        intake.coralIntakeOn();
-                    } else if (driver_controller.getYButton()) {
-                        intake.coralIntakeOut();
-                    }
-
-                }, intake));
-
-        if (driver_controller.getLeftStickButton()) {
-            sendable_chooser.setDefaultOption("Blue_Intake", "Blue_Intake");
-        } else if (driver_controller.getRightStickButton()) {
-            sendable_chooser.setDefaultOption("Processor_Blue", "Processor_Blue");
+        // Sendable Chooser Test
+        if (mani_controller.getAButton()) {
+            SmartDashboard.putString("Send Able Chooser Selected", (String) sendable_chooser.getSelected());
+            SmartDashboard.putBoolean("Button on mani Cont pressed", mani_controller.getAButton());
+            sendable_chooser.setDefaultOption("Red_Reef_1", "Red_Reef_1");
         }
 
+        // Drive Control
+        // robot_drive.setDefaultCommand(
+        // new RunCommand(
+        // () -> robot_drive.drive(
+        // -MathUtil.applyDeadband(driver_controller.getLeftY(),
+        // JoystickConstants.DRIVE_DEADBAND),
+        // -MathUtil.applyDeadband(driver_controller.getLeftX(),
+        // JoystickConstants.DRIVE_DEADBAND),
+        // -MathUtil.applyDeadband(driver_controller.getRightX(),
+        // JoystickConstants.DRIVE_DEADBAND),
+        // field_centric, true),
+
+        // robot_drive));
+
+        // Coral Intake
+        // coral_intake.setDefaultCommand(new RunCommand(
+        //         () -> {
+        //             if (driver_controller.getXButton()) {
+        //                 coral_intake.manual_intake_control(0.5);
+        //             } else if (driver_controller.getYButton()) {
+        //                 coral_intake.manual_intake_control(-0.5);
+        //             } else if (driver_controller.getAButton()) {
+        //                 coral_intake.pid_pivot_control(8);
+        //             } else if (driver_controller.getBButton()) {
+        //                 coral_intake.pid_pivot_control(0);
+        //             } else {
+        //                 coral_intake.manual_intake_control(0);
+        //             }
+        //         }, coral_intake));
+
+        // Elevator Control
         elevator.setDefaultCommand(new RunCommand(
                 () -> {
                     if (driver_controller.getRightBumperButton()) {
-                        elevator.pid_control(68);
+                        elevator.manual_elevator_rise();
                     } else if (driver_controller.getLeftBumperButton()) {
-                        elevator.pid_control(40.5);
+                        elevator.pid_control(10.8);
                     } else {
-                        elevator.pid_control(0);
+                        elevator.stop();
                     }
                 }, elevator));
     }
 
     public Command getAutonomousCommand() {
         Pose2d selectedPose = new Pose2d();
+
+        // Select the pose based on the selected option from the sendable chooser
         switch ((String) sendable_chooser.getSelected()) {
             case "Red_Reef_1":
                 selectedPose = PathPlannerConstants.pose_Red_Reef1;
@@ -184,6 +200,7 @@ public class RobotContainer {
         }
 
         if (selectedPose != null) {
+            // Use the selectedPose to make the final path that the code shpould follow
             try {
 
                 List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
@@ -191,23 +208,15 @@ public class RobotContainer {
                         selectedPose);
 
                 PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
-                        Math.PI); // The constraints
-                // // for this path.
-                PathPlannerPath path3 = new PathPlannerPath(
+                        Math.PI);
+
+                PathPlannerPath path = new PathPlannerPath(
                         waypoints,
                         constraints,
-                        null, // The ideal starting state, this is only relevant for pre-planned
-                        // paths, so can
-                        // // be null for on-the-fly paths.
-                        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can
-                // set a holonomic
-                // // rotation here. If using a differential
-                // // drivetrain, the rotation will have no effect.
-                );
+                        null,
+                        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
 
-                // // Create a path following command using AutoBuilder. This will also trigger
-                // // event markers.
-                return AutoBuilder.followPath(path3);
+                return AutoBuilder.followPath(path);
 
             } catch (Exception e) {
                 DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());

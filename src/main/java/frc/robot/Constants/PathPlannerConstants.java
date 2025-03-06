@@ -14,6 +14,10 @@ public class PathPlannerConstants {
     public static final Pose2d pose_Blue_Reef6 = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Blue_Reef7 = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Blue_Reef8 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Blue_Reef9 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Blue_Reef10 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Blue_Reef11 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Blue_Reef12 = new Pose2d(0,0,new Rotation2d(50));
 
     public static final Pose2d pose_Red_Reef1 = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Red_Reef2 = new Pose2d(0,0,new Rotation2d(50));
@@ -23,6 +27,10 @@ public class PathPlannerConstants {
     public static final Pose2d pose_Red_Reef6 = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Red_Reef7 = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Red_Reef8 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Red_Reef9 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Red_Reef10 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Red_Reef11 = new Pose2d(0,0,new Rotation2d(50));
+    public static final Pose2d pose_Red_Reef12 = new Pose2d(0,0,new Rotation2d(50));
 
     public static final Pose2d pose_Processor_Red = new Pose2d(0,0,new Rotation2d(50));
     public static final Pose2d pose_Processor_Blue = new Pose2d(0,0,new Rotation2d(50));

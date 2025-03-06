@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
         left_motor = new SparkMax(6, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
+        config.smartCurrentLimit(15).idleMode(IdleMode.kCoast);
 
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -35,6 +35,12 @@ public class Elevator extends SubsystemBase {
 
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
+    }
+    public void manual_elevator_rise()
+    {
+        right_motor.setVoltage(-4.0);
+        left_motor.setVoltage(4.0);
+
     }
 
     public void move_up() {
@@ -76,6 +82,10 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator Height", get_height());
+        if(Math.abs(right_motor.getEncoder().getPosition())>68.5)
+        {
+            right_motor.setVoltage(0.0);
+            left_motor.setVoltage(0.0);
+        }
     }
 }
