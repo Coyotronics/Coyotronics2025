@@ -76,15 +76,18 @@ public class MAXSwerveModule {
         this.desired_state = desired_state;
     }
 
-    public void reset_encoders() {
+    public void reset_encoders() 
+    {
         driving_encoder.setPosition(0);
     }
 
-    public double get_volatge_driving() {
+    public double get_volatge_driving() 
+    {
         return driving_spark_max.getBusVoltage() * driving_spark_max.getAppliedOutput();
     }
 
-    public double get_voltage_turning() {
+    public double get_voltage_turning() 
+    {
         return turning_spark_max.getBusVoltage() * turning_spark_max.getAppliedOutput();
     }
 }
