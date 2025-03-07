@@ -3,52 +3,54 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
+import frc.robot.Enums.IntakeStates;
+
 public class AlgaeIntake extends SubsystemBase {
-   SparkMax Algae_Master = new SparkMax(36, MotorType.kBrushless);
-   SparkMax Algae_Slave = new SparkMax(37, MotorType.kBrushless);
-   SparkMaxConfig Algae_Config = new SparkMaxConfig();
-   public int state = 0;
+    private SparkMax intake_motor_right = new SparkMax(37, MotorType.kBrushless);
+    private SparkMax intake_motor_left = new SparkMax(62, MotorType.kBrushless);
+
+    private IntakeStates intake_state = IntakeStates.IDLE;
+
     public AlgaeIntake() {
-        Algae_Config.idleMode(IdleMode.kCoast);
-        Algae_Master.configure(Algae_Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        Algae_Slave.configure(Algae_Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig intake_config = new SparkMaxConfig();
+
+        intake_config.idleMode(IdleMode.kCoast);
+
+        intake_motor_right.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        intake_motor_left.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void intake(int state) {
-        if(state==0)
-        {
-            Algae_Master.set(0.5);
-            Algae_Slave.set(-0.5);
-        }
-        else if(state==1)
-        {
-            Algae_Master.set(0);
-            Algae_Slave.set(0);
-        }
-        else
-        {
-            Algae_Master.set(-0.5);
-            Algae_Slave.set(-0.5);
-        }
+    public void set_intake_speed(double speed) {
+        intake_motor_right.set(speed);
+        intake_motor_left.set(-speed);
     }
 
-    
-
-   
-
-    @Override
-    public void periodic() {
-       
+    public void intake() {
+        switch (intake_state) {
+            case IDLE:
+                set_intake_speed(-0.1);
+                intake_state = IntakeStates.FORWARD;
+                break;
+            
+            case FORWARD:
+                set_intake_speed(0);
+                intake_state = IntakeStates.REVERSE;
+                break;
+            
+            case REVERSE:
+                set_intake_speed(0.1);
+                intake_state = IntakeStates.IDLE;
+                break;
+        
+            default:
+                break;
+        }
     }
 }

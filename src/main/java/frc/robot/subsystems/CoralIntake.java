@@ -1,3 +1,4 @@
+
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -6,17 +7,21 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
+import frc.robot.Enums.IntakeStates;
+import frc.robot.Enums.PivotStates;
+
 public class CoralIntake extends SubsystemBase {
     SparkMax coral_intake_motor = new SparkMax(36, MotorType.kBrushless);
     SparkMax coral_pivot_motor = new SparkMax(7, MotorType.kBrushless);
-    private boolean reached_intake_position = false;
+
+    private IntakeStates intake_state = IntakeStates.IDLE;
+    private PivotStates pivot_state = PivotStates.INTAKE;
 
     public CoralIntake() {
         SparkMaxConfig intake_config = new SparkMaxConfig();
@@ -25,7 +30,6 @@ public class CoralIntake extends SubsystemBase {
         intake_config.idleMode(IdleMode.kCoast);
 
         pivot_config.idleMode(IdleMode.kBrake);
-        pivot_config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(0.02, 0.02, 0.02).outputRange(-0.5, 0.5);
 
         coral_intake_motor.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         coral_pivot_motor.configure(pivot_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -34,20 +38,25 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void pivot() {
-        if (!reached_intake_position) {
-            while (get_pivot_position() < 8) {
-                coral_pivot_motor.set(0.2);
-            }
+        switch (pivot_state) {
+            case SHOOT:
+                while (get_pivot_position() < 6.2) {
+                    coral_pivot_motor.set(0.2);
+                }
+                coral_pivot_motor.set(0);
+                pivot_state = PivotStates.INTAKE;
+                break;
             
-            coral_pivot_motor.set(0);
-            reached_intake_position = true;
-        } else {
-            while (get_pivot_position() > 0.5) {
-                coral_pivot_motor.set(-0.2);
-            }
-
-            coral_pivot_motor.set(0);
-            reached_intake_position = false;
+            case INTAKE:
+                while (get_pivot_position() > 5.8) {
+                    coral_pivot_motor.set(-0.2);
+                }
+                coral_pivot_motor.set(0);
+                pivot_state = PivotStates.SHOOT;
+                break;
+        
+            default:
+                break;
         }
     }
 
@@ -55,17 +64,26 @@ public class CoralIntake extends SubsystemBase {
         return coral_pivot_motor.getEncoder().getPosition();
     }
 
-    public void manual_intake_control(double speed) {
-        coral_intake_motor.set(speed);
-    }
-
-    public void pid_pivot_control(double setpoint) {
-        coral_pivot_motor.getClosedLoopController().setReference(setpoint, ControlType.kPosition);
-    }
-
-    public void stop() {
-        coral_intake_motor.set(0);
-        coral_pivot_motor.set(0);
+    public void intake() {
+        switch (intake_state) {
+            case IDLE:
+                coral_intake_motor.set(0.5);
+                intake_state = IntakeStates.FORWARD;
+                break;
+            
+            case FORWARD:
+                coral_intake_motor.set(0);
+                intake_state = IntakeStates.REVERSE;
+                break;
+            
+            case REVERSE:
+                coral_intake_motor.set(-0.5);
+                intake_state = IntakeStates.IDLE;
+                break;
+            
+            default:
+                break;
+        }
     }
 
     @Override
