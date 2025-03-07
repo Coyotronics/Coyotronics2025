@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 public class CoralIntake extends SubsystemBase {
     SparkMax coral_intake_motor = new SparkMax(36, MotorType.kBrushless);
     SparkMax coral_pivot_motor = new SparkMax(7, MotorType.kBrushless);
+    private boolean reached_intake_position = false;
 
     public CoralIntake() {
         SparkMaxConfig intake_config = new SparkMaxConfig();
@@ -30,6 +31,28 @@ public class CoralIntake extends SubsystemBase {
         coral_pivot_motor.configure(pivot_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         coral_pivot_motor.getEncoder().setPosition(0);
+    }
+
+    public void pivot() {
+        if (!reached_intake_position) {
+            while (get_pivot_position() < 8) {
+                coral_pivot_motor.set(0.2);
+            }
+            
+            coral_pivot_motor.set(0);
+            reached_intake_position = true;
+        } else {
+            while (get_pivot_position() > 0.5) {
+                coral_pivot_motor.set(-0.2);
+            }
+
+            coral_pivot_motor.set(0);
+            reached_intake_position = false;
+        }
+    }
+
+    private double get_pivot_position() {
+        return coral_pivot_motor.getEncoder().getPosition();
     }
 
     public void manual_intake_control(double speed) {
