@@ -68,7 +68,7 @@ public class RobotContainer {
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (driver_controller.getAButton()) {
+                    if (driver_controller.getAButtonReleased()) {
                         coral_intake.pivot();
                     } else if (driver_controller.getBButtonReleased()) {
                         coral_intake.intake();

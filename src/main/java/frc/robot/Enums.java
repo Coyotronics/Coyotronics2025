@@ -8,8 +8,4 @@ public class Enums {
     public enum PivotStates {
         INTAKE, SHOOT
     }
-
-    public enum ElevatorStates {
-        BOTTOM, L2, L3
-    }
 }
