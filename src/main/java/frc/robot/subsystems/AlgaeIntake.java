@@ -19,7 +19,7 @@ public class AlgaeIntake extends SubsystemBase {
     private SparkMax intake_motor_left = new SparkMax(62, MotorType.kBrushless);
     private SparkMax pivot_motor = new SparkMax(58, MotorType.kBrushless);
 
-    private IntakeStates intake_state = IntakeStates.IDLE;
+    private IntakeStates intake_state = IntakeStates.FORWARD;
     private PivotStates pivot_states = PivotStates.INTAKE;
 
     public AlgaeIntake() {
@@ -38,22 +38,16 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public void intake() {
-        switch (intake_state) {
-            case IDLE:
-                set_intake_speed(-0.4);
-                intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("ALGAE INTAKE","ALGAE INTAKE");
-                break;
-            
+        switch (intake_state) {            
             case FORWARD:
-                set_intake_speed(0);
+                set_intake_speed(-0.4);
                 intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("ALGAE INTAKE","ALGAE IDLE");
+                SmartDashboard.putString("ALGAE INTAKE","ALGAE INTAKE");
                 break;
 
             case REVERSE:
                 set_intake_speed(0.4);
-                intake_state = IntakeStates.IDLE;
+                intake_state = IntakeStates.FORWARD;
                 SmartDashboard.putString("ALGAE INTAKE","ALGAE OUTTAKE");
                 break;
         
