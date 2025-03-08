@@ -16,12 +16,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.PathPlannerConstants;
+import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +31,7 @@ import frc.robot.subsystems.Elevator;
 public class RobotContainer {
     static boolean field_centric = true;
     private final CoralIntake coral_intake = new CoralIntake();
+    private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
@@ -41,35 +41,7 @@ public class RobotContainer {
 
     public SendableChooser<Command> sendable_chooser = new SendableChooser<>();
 
-    @SuppressWarnings("unchecked")
     public RobotContainer() {
-        // Load in all sendable chooser options when the robot code is started
-        /*
-         * sendable_chooser.addOption("Red_Reef_1", "Red_Reef_1");
-         * sendable_chooser.addOption("Red_Reef_2", "Red_Reef_2");
-         * sendable_chooser.addOption("Red_Reef_3", "Red_Reef_3");
-         * sendable_chooser.addOption("Red_Reef_4", "Red_Reef_4");
-         * sendable_chooser.addOption("Red_Reef_5", "Red_Reef_5");
-         * sendable_chooser.addOption("Red_Reef_6", "Red_Reef_6");
-         * sendable_chooser.addOption("Red_Reef_7", "Red_Reef_7");
-         * sendable_chooser.addOption("Red_Reef_8", "Red_Reef_8");
-         * 
-         * sendable_chooser.addOption("Blue_Reef_1", "Blue_Reef_1");
-         * sendable_chooser.addOption("Blue_Reef_2", "Blue_Reef_2");
-         * sendable_chooser.addOption("Blue_Reef_3", "Blue_Reef_3");
-         * sendable_chooser.addOption("Blue_Reef_4", "Blue_Reef_4");
-         * sendable_chooser.addOption("Blue_Reef_5", "Blue_Reef_5");
-         * sendable_chooser.addOption("Blue_Reef_6", "Blue_Reef_6");
-         * sendable_chooser.addOption("Blue_Reef_7", "Blue_Reef_7");
-         * sendable_chooser.addOption("Blue_Reef_8", "Blue_Reef_8");
-         * 
-         * sendable_chooser.addOption("Blue_Intake", "Blue_Intake");
-         * sendable_chooser.addOption("Red_Intake", "Red_Intake");
-         * 
-         * sendable_chooser.addOption("Processor_Blue", "Processor_Blue");
-         * sendable_chooser.addOption("Processor_Red", "Processor_Red");
-         */
-
         if (driver_controller.getLeftTriggerAxis() == 1 && driver_controller.getRightTriggerAxis() == 1) {
             field_centric = !field_centric;
         }
@@ -83,35 +55,48 @@ public class RobotContainer {
         robot_drive.setDefaultCommand(
                 new RunCommand(
                         () -> robot_drive.drive(
-                                -MathUtil.applyDeadband(driver_controller.getLeftY(),
+                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
                                         JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getLeftX(),
+                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
                                         JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getRightX(),
+                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
                                         JoystickConstants.DRIVE_DEADBAND),
                                 field_centric, true),
 
                         robot_drive));
+
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
                 () -> {
                     if (driver_controller.getAButton()) {
                         coral_intake.pivot();
+                    } else if (driver_controller.getBButtonReleased()) {
+                        coral_intake.intake();
                     }
                 }, coral_intake));
 
-        // Elevator Control
-        // elevator.setDefaultCommand(new RunCommand(
-        // () -> {
+        // Algae Intake
+        algae_intake.setDefaultCommand(new RunCommand(
+                () -> {
+                    if (driver_controller.getXButtonReleased()) {
+                        algae_intake.intake();
+                    }
+                }, algae_intake));
 
-        // if (driver_controller.getRightBumperButton()) {
-        // elevator.manual_elevator_rise();
-        // } else if (driver_controller.getLeftBumperButton()) {
-        // elevator.pid_control(10.8);
-        // } else {
-        // elevator.stop();
-        // }
-        // }, elevator));
+        // Elevator Control
+        elevator.setDefaultCommand(new RunCommand(
+                () -> {
+
+                    if (driver_controller.getRightBumperButton()) {
+                        elevator.manual_elevator_rise();
+                    } else if (driver_controller.getLeftBumperButton()) {
+                        elevator.pid_control(10.8);
+                    } else if (driver_controller.getYButton()) {
+                        elevator.pid_control(0.5);
+                    } else {
+                        elevator.stop();
+                    }
+                }, elevator));
     }
 
     public Command getAutonomousCommand(String selected) {

@@ -9,7 +9,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
@@ -36,6 +35,7 @@ public class Elevator extends SubsystemBase {
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
     }
+    
     public void manual_elevator_rise()
     {
         right_motor.setVoltage(-4.0);

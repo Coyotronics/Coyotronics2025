@@ -22,7 +22,6 @@ import frc.robot.RobotContainer;
 
 public class Robot extends TimedRobot {
     private Command autonomous_command;
-    public Joystick buttonPanel = new Joystick(0);
     private RobotContainer robot_container;
 
     /**
@@ -104,21 +103,6 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        System.out.println("I ran");
-        SmartDashboard.putBoolean("Button is pressed",buttonPanel.getRawButton(3));
-
-        if (buttonPanel.getRawButton(3)) {
-           robot_container.sendable_chooser.setDefaultOption("Red_Reef_1", robot_container.getAutonomousCommand("Red_Reef_1"));
-           System.out.println("Button 3 is pressed");
-        } ;
-
-        SmartDashboard.putString("Sendable Chooser Val",robot_container.sendable_chooser.getSelected().toString());
-
-        if(autonomous_command!=null)
-        {
-
-        }
-        // Periodic Methods (Not recommended for regular use)
         Telemetery.update();
     }
 
