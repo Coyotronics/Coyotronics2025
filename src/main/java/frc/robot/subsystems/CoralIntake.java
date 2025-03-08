@@ -19,7 +19,7 @@ public class CoralIntake extends SubsystemBase {
     SparkMax coral_intake_motor = new SparkMax(36, MotorType.kBrushless);
     SparkMax coral_pivot_motor = new SparkMax(7, MotorType.kBrushless);
 
-    private IntakeStates intake_state = IntakeStates.IDLE;
+    private IntakeStates intake_state = IntakeStates.FORWARD;
     private PivotStates pivot_state = PivotStates.INTAKE;
 
     public CoralIntake() {
@@ -69,22 +69,16 @@ public class CoralIntake extends SubsystemBase {
     }
 
     public void intake() {
-        switch (intake_state) {
-            case IDLE:
-                coral_intake_motor.set(-0.2);
-                intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("INTAKE STATE", "CORAL INTAKE");
-                break;
-            
+        switch (intake_state) {           
             case FORWARD:
-                coral_intake_motor.set(0);
+                coral_intake_motor.set(-0.2);
                 intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("INTAKE STATE", "CORAL IDLE");
+                SmartDashboard.putString("INTAKE STATE", "CORAL INTAKE");
                 break;
             
             case REVERSE:
                 coral_intake_motor.set(0.2);
-                intake_state = IntakeStates.IDLE;
+                intake_state = IntakeStates.FORWARD;
                 SmartDashboard.putString("INTAKE STATE", "CORAL OUTTAKE");
                 break;
             
