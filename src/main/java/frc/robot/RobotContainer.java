@@ -52,18 +52,18 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // Drive Control
-        robot_drive.setDefaultCommand(
-                new RunCommand(
-                        () -> robot_drive.drive(
-                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
-                                        JoystickConstants.DRIVE_DEADBAND),
-                                field_centric, true),
+        // robot_drive.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> robot_drive.drive(
+        //                         -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
+        //                                 JoystickConstants.DRIVE_DEADBAND),
+        //                         -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
+        //                                 JoystickConstants.DRIVE_DEADBAND),
+        //                         -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
+        //                                 JoystickConstants.DRIVE_DEADBAND),
+        //                         field_centric, true),
 
-                        robot_drive));
+        //                 robot_drive));
 
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
@@ -100,77 +100,13 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(String selected) {
-        Pose2d selectedPose = new Pose2d();
+        Pose2d selectedPose = new Pose2d(2.398,0.674,new Rotation2d(57.8*(Math.PI)/180));
+    
 
         // Select the pose based on the selected option from the sendable chooser
         // switch ((String) sendable_chooser.getSelected()) {
-        switch (selected) {
-            case "Red_Reef_1":
-                selectedPose = PathPlannerConstants.pose_Red_Reef1;
-                break;
-            case "Red_Reef_2":
-                selectedPose = PathPlannerConstants.pose_Red_Reef2;
-                break;
-            case "Red_Reef_3":
-                selectedPose = PathPlannerConstants.pose_Red_Reef3;
-                break;
-            case "Red_Reef_4":
-                selectedPose = PathPlannerConstants.pose_Red_Reef4;
-                break;
-            case "Red_Reef_5":
-                selectedPose = PathPlannerConstants.pose_Red_Reef5;
-                break;
-            case "Red_Reef_6":
-                selectedPose = PathPlannerConstants.pose_Red_Reef6;
-                break;
-            case "Red_Reef_7":
-                selectedPose = PathPlannerConstants.pose_Red_Reef7;
-                break;
-            case "Red_Reef_8":
-                selectedPose = PathPlannerConstants.pose_Red_Reef8;
-                break;
-            case "Blue_Reef_1":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef1;
-                break;
-            case "Blue_Reef_2":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef2;
-                break;
-            case "Blue_Reef_3":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef3;
-                break;
-            case "Blue_Reef_4":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef4;
-                break;
-            case "Blue_Reef_5":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef5;
-                break;
-            case "Blue_Reef_6":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef6;
-                break;
-            case "Blue_Reef_7":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef7;
-                break;
-            case "Blue_Reef_8":
-                selectedPose = PathPlannerConstants.pose_Blue_Reef8;
-                break;
-            case "Processor_Blue":
-                selectedPose = PathPlannerConstants.pose_Processor_Blue;
-                break;
-            case "Processor_Red":
-                selectedPose = PathPlannerConstants.pose_Processor_Red;
-                break;
-            case "Red_Intake":
-                selectedPose = PathPlannerConstants.intake_red;
-                break;
-            case "Blue_Intake":
-                selectedPose = PathPlannerConstants.intake_blue;
-                break;
-            default:
-                selectedPose = null;
-        }
+        
 
-        if (selectedPose != null) {
-            // Use the selectedPose to make the final path that the code shpould follow
             try {
 
                 List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
@@ -192,8 +128,8 @@ public class RobotContainer {
                 DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
                 return Commands.none();
             }
-        }
-        return null;
+
+
     }
 
 }

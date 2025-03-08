@@ -66,7 +66,7 @@ public class CoralIntake extends SubsystemBase {
     public void intake() {
         switch (intake_state) {
             case IDLE:
-                coral_intake_motor.set(0.5);
+                coral_intake_motor.set(-0.2);
                 intake_state = IntakeStates.FORWARD;
                 break;
             
@@ -76,7 +76,7 @@ public class CoralIntake extends SubsystemBase {
                 break;
             
             case REVERSE:
-                coral_intake_motor.set(-0.5);
+                coral_intake_motor.set(0.2);
                 intake_state = IntakeStates.IDLE;
                 break;
             
