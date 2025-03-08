@@ -9,12 +9,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Elevator extends SubsystemBase {
-    private final double MAX_HEIGHT = 88;
-    private final double MIN_HEIGHT = 1;
-
     private final SparkMax right_motor;
     private final SparkMax left_motor;
 
@@ -35,31 +33,26 @@ public class Elevator extends SubsystemBase {
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
     }
-    
-    public void manual_elevator_rise()
-    {
+
+    public void manual_elevator_rise() {
         right_motor.setVoltage(-4.0);
         left_motor.setVoltage(4.0);
 
     }
 
     public void move_up() {
-        double pid = calculate_pid(MAX_HEIGHT);
-
-        right_motor.set(-pid);
-        left_motor.set(pid);
+        right_motor.setVoltage(-4.0);
+        left_motor.setVoltage(4.0);
     }
 
     public void move_down() {
-        double pid = calculate_pid(MIN_HEIGHT);
-
-        right_motor.set(-pid);
-        left_motor.set(pid);
+        right_motor.setVoltage(4.0);
+        left_motor.setVoltage(-4.0);
     }
 
     public void pid_control(double setpoint) {
         double num = calculate_pid(setpoint);
-        
+
         right_motor.set(-num);
         left_motor.set(num);
     }
@@ -82,10 +75,16 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(Math.abs(right_motor.getEncoder().getPosition())>68.5)
-        {
-            right_motor.setVoltage(0.0);
-            left_motor.setVoltage(0.0);
+        if (get_height() > 39 && get_height() < 41) {
+            SmartDashboard.putBoolean("L2 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L2 Ready", false);
+        }
+
+        if (get_height() > 67 && get_height() < 69) {
+            SmartDashboard.putBoolean("L3 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L3 Ready", false);
         }
     }
 }

@@ -34,6 +34,9 @@ public class CoralIntake extends SubsystemBase {
         coral_pivot_motor.configure(pivot_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         coral_pivot_motor.getEncoder().setPosition(0);
+
+        SmartDashboard.putString("INTAKE STATE", "IDLE");
+        SmartDashboard.putString("PIVOT STATE", "IDLE");
     }
 
     public void pivot() {
@@ -44,6 +47,7 @@ public class CoralIntake extends SubsystemBase {
                 }
                 coral_pivot_motor.set(0);
                 pivot_state = PivotStates.INTAKE;
+                SmartDashboard.putString("Pivot State", "PIVOT INTAKE");
                 break;
             
             case INTAKE:
@@ -52,6 +56,7 @@ public class CoralIntake extends SubsystemBase {
                 }
                 coral_pivot_motor.set(0);
                 pivot_state = PivotStates.SHOOT;
+                SmartDashboard.putString("Pivot State", "PIVOT SHOOT");
                 break;
         
             default:
@@ -68,26 +73,23 @@ public class CoralIntake extends SubsystemBase {
             case IDLE:
                 coral_intake_motor.set(-0.2);
                 intake_state = IntakeStates.FORWARD;
+                SmartDashboard.putString("Intake State", "CORAL INTAKE");
                 break;
             
             case FORWARD:
                 coral_intake_motor.set(0);
                 intake_state = IntakeStates.REVERSE;
+                SmartDashboard.putString("Intake State", "CORAL IDLE");
                 break;
             
             case REVERSE:
                 coral_intake_motor.set(0.2);
                 intake_state = IntakeStates.IDLE;
+                SmartDashboard.putString("Intake State", "CORAL OUTTAKE");
                 break;
             
             default:
                 break;
         }
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Pivot Encoder", coral_pivot_motor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Intake Applied", coral_intake_motor.getAppliedOutput()*12);
     }
 }
