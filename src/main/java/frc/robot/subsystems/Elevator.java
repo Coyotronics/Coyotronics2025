@@ -9,19 +9,14 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Enums.ElevatorStates;
 
 public class Elevator extends SubsystemBase {
-    private final double MAX_HEIGHT = 88;
-    private final double MIN_HEIGHT = 1;
-
     private final SparkMax right_motor;
     private final SparkMax left_motor;
 
     private final PIDController pid_controller;
-
-    private ElevatorStates elevator_states = ElevatorStates.BOTTOM;
 
     public Elevator() {
         right_motor = new SparkMax(5, MotorType.kBrushless);
@@ -80,9 +75,16 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (Math.abs(right_motor.getEncoder().getPosition()) > 68.5) {
-            right_motor.setVoltage(0.0);
-            left_motor.setVoltage(0.0);
+        if (get_height() > 39 && get_height() < 41) {
+            SmartDashboard.putBoolean("L2 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L2 Ready", false);
+        }
+
+        if (get_height() > 67 && get_height() < 69) {
+            SmartDashboard.putBoolean("L3 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L3 Ready", false);
         }
     }
 }

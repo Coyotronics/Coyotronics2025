@@ -86,14 +86,11 @@ public class RobotContainer {
         // Elevator Control
         elevator.setDefaultCommand(new RunCommand(
                 () -> {
-
                     if (driver_controller.getRightBumperButton()) {
-                        elevator.manual_elevator_rise();
+                        elevator.move_up();
                     } else if (driver_controller.getLeftBumperButton()) {
-                        elevator.pid_control(10.8);
-                    } else if (driver_controller.getYButton()) {
-                        elevator.pid_control(0.5);
-                    } else {
+                        elevator.move_down();
+                    }else {
                         elevator.stop();
                     }
                 }, elevator));
