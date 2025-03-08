@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.Constants.PathPlannerConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
@@ -31,13 +30,13 @@ import frc.robot.subsystems.Elevator;
 public class RobotContainer {
     static boolean field_centric = true;
     private final CoralIntake coral_intake = new CoralIntake();
-    private final AlgaeIntake algae_intake = new AlgaeIntake();
+    // private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
     // Joystick button_board = new Joystick(2);
     XboxController driver_controller = new XboxController(0);
-    XboxController mani_controller = new XboxController(1); // Check ports
+    // XboxController mani_controller = new XboxController(1); // Check ports
 
     public SendableChooser<Command> sendable_chooser = new SendableChooser<>();
 
@@ -52,36 +51,36 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // Drive Control
-        // robot_drive.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> robot_drive.drive(
-        //                         -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
-        //                                 JoystickConstants.DRIVE_DEADBAND),
-        //                         -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
-        //                                 JoystickConstants.DRIVE_DEADBAND),
-        //                         -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
-        //                                 JoystickConstants.DRIVE_DEADBAND),
-        //                         field_centric, true),
+        robot_drive.setDefaultCommand(
+                new RunCommand(
+                        () -> robot_drive.drive(
+                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
+                                        JoystickConstants.DRIVE_DEADBAND),
+                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
+                                        JoystickConstants.DRIVE_DEADBAND),
+                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
+                                        JoystickConstants.DRIVE_DEADBAND),
+                                field_centric, true),
 
-        //                 robot_drive));
+                        robot_drive));
 
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (driver_controller.getAButton()) {
+                    if (driver_controller.getAButtonReleased()) {
                         coral_intake.pivot();
                     } else if (driver_controller.getBButtonReleased()) {
                         coral_intake.intake();
                     }
                 }, coral_intake));
 
-        // Algae Intake
-        algae_intake.setDefaultCommand(new RunCommand(
-                () -> {
-                    if (driver_controller.getXButtonReleased()) {
-                        algae_intake.intake();
-                    }
-                }, algae_intake));
+        // // Algae Intake
+        // algae_intake.setDefaultCommand(new RunCommand(
+        // () -> {
+        // if (driver_controller.getXButtonReleased()) {
+        // algae_intake.intake();
+        // }
+        // }, algae_intake));
 
         // Elevator Control
         elevator.setDefaultCommand(new RunCommand(
@@ -90,42 +89,39 @@ public class RobotContainer {
                         elevator.move_up();
                     } else if (driver_controller.getLeftBumperButton()) {
                         elevator.move_down();
-                    }else {
+                    } else {
                         elevator.stop();
                     }
                 }, elevator));
     }
 
-    public Command getAutonomousCommand(String selected) {
-        Pose2d selectedPose = new Pose2d(2.398,0.674,new Rotation2d(57.8*(Math.PI)/180));
-    
+    public Command getAutonomousCommand() {
+        Pose2d selectedPose = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
 
         // Select the pose based on the selected option from the sendable chooser
         // switch ((String) sendable_chooser.getSelected()) {
-        
 
-            try {
+        try {
 
-                List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                        robot_drive.get_pose(),
-                        selectedPose);
+            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+                    robot_drive.get_pose(),
+                    selectedPose);
 
-                PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
-                        Math.PI);
+            PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
+                    Math.PI);
 
-                PathPlannerPath path = new PathPlannerPath(
-                        waypoints,
-                        constraints,
-                        null,
-                        new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+            PathPlannerPath path = new PathPlannerPath(
+                    waypoints,
+                    constraints,
+                    null,
+                    new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
 
-                return AutoBuilder.followPath(path);
+            return AutoBuilder.followPath(path);
 
-            } catch (Exception e) {
-                DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-                return Commands.none();
-            }
-
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+            return Commands.none();
+        }
 
     }
 

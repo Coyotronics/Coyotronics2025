@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        autonomous_command = robot_container.getAutonomousCommand("Red_Reef_1");
+        autonomous_command = robot_container.getAutonomousCommand();
         //placeholder
         
         if (autonomous_command != null) {

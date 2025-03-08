@@ -23,7 +23,7 @@ public class Elevator extends SubsystemBase {
         left_motor = new SparkMax(6, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(15).idleMode(IdleMode.kCoast);
+        config.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
 
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -46,8 +46,8 @@ public class Elevator extends SubsystemBase {
     }
 
     public void move_down() {
-        right_motor.setVoltage(4.0);
-        left_motor.setVoltage(-4.0);
+        right_motor.setVoltage(2.0);
+        left_motor.setVoltage(-2.0);
     }
 
     public void pid_control(double setpoint) {
