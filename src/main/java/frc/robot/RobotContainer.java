@@ -96,16 +96,19 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Pose2d selectedPose = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
+        Pose2d source = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
+
+        Pose2d reef = new Pose2d(3.668, -5.350, new Rotation2d(-80 * (Math.PI) / 180));
 
         // Select the pose based on the selected option from the sendable chooser
         // switch ((String) sendable_chooser.getSelected()) {
+
 
         try {
 
             List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                     robot_drive.get_pose(),
-                    selectedPose);
+                    source, reef);
 
             PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
                     Math.PI);
