@@ -54,11 +54,11 @@ public class RobotContainer {
         robot_drive.setDefaultCommand(
                 new RunCommand(
                         () -> robot_drive.drive(
-                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.5,
+                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.75,
                                         JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.5,
+                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.75,
                                         JoystickConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.5,
+                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.75,
                                         JoystickConstants.DRIVE_DEADBAND),
                                 field_centric, true),
 
@@ -99,6 +99,7 @@ public class RobotContainer {
         Pose2d source = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
 
         Pose2d reef = new Pose2d(3.668, -5.350, new Rotation2d(-80 * (Math.PI) / 180));
+        Pose2d selectedPose = new Pose2d(-2.25, 1.99, new Rotation2d(117 * (Math.PI) / 180));
 
         // Select the pose based on the selected option from the sendable chooser
         // switch ((String) sendable_chooser.getSelected()) {
