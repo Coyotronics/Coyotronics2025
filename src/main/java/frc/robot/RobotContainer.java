@@ -98,7 +98,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        algae_intake.pivot();
+        // algae_intake.pivot();
         return null;
 
     }
