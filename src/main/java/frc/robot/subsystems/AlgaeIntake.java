@@ -64,7 +64,7 @@ public class AlgaeIntake extends SubsystemBase {
                 }
                 pivot_motor.set(0);
                 pivot_states = PivotStates.INTAKE;
-                SmartDashboard.putString("PIVOT STATE, ALGAE", "UP");
+                SmartDashboard.putString("ALGAE PIVOT STATE", "UP");
                 break;
             
             case INTAKE:
@@ -73,7 +73,7 @@ public class AlgaeIntake extends SubsystemBase {
                 }
                 pivot_motor.set(0);
                 pivot_states = PivotStates.SHOOT;
-                SmartDashboard.putString("PIVOT STATE", "DOWN");
+                SmartDashboard.putString("ALGAE PIVOT STATE", "DOWN");
                 break;
         
             default:

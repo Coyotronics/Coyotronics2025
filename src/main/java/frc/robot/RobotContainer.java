@@ -30,7 +30,7 @@ import frc.robot.subsystems.Elevator;
 public class RobotContainer {
     static boolean field_centric = true;
     private final CoralIntake coral_intake = new CoralIntake();
-    // private final AlgaeIntake algae_intake = new AlgaeIntake();
+    private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
     private final Elevator elevator = new Elevator();
 
@@ -74,13 +74,15 @@ public class RobotContainer {
                     }
                 }, coral_intake));
 
-        // // Algae Intake
-        // algae_intake.setDefaultCommand(new RunCommand(
-        // () -> {
-        // if (driver_controller.getXButtonReleased()) {
-        // algae_intake.intake();
-        // }
-        // }, algae_intake));
+        // Algae Intake
+        algae_intake.setDefaultCommand(new RunCommand(
+                () -> {
+                    if (driver_controller.getXButtonReleased()) {
+                        algae_intake.intake();
+                    } else if (driver_controller.getYButtonReleased()) {
+                        algae_intake.pivot();
+                    }
+                }, algae_intake));
 
         // Elevator Control
         elevator.setDefaultCommand(new RunCommand(
@@ -96,36 +98,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Pose2d source = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
-
-        Pose2d reef = new Pose2d(3.668, -5.350, new Rotation2d(-80 * (Math.PI) / 180));
-        Pose2d selectedPose = new Pose2d(-2.25, 1.99, new Rotation2d(117 * (Math.PI) / 180));
-
-        // Select the pose based on the selected option from the sendable chooser
-        // switch ((String) sendable_chooser.getSelected()) {
-
-
-        try {
-
-            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                    robot_drive.get_pose(),
-                    source, reef);
-
-            PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
-                    Math.PI);
-
-            PathPlannerPath path = new PathPlannerPath(
-                    waypoints,
-                    constraints,
-                    null,
-                    new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
-
-            return AutoBuilder.followPath(path);
-
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
-        }
+        algae_intake.pivot();
+        return null;
 
     }
 

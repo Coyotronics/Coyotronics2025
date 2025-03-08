@@ -39,10 +39,9 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         robot_container = new RobotContainer();
-        UsbCamera camera = CameraServer.startAutomaticCapture();
-        ShuffleboardTab tab = Shuffleboard.getTab("Camera");
-        tab.add(camera);
-
+        // UsbCamera camera = CameraServer.startAutomaticCapture();
+        // ShuffleboardTab tab = Shuffleboard.getTab("Camera");
+        // tab.add(camera);
     }
 
     /**

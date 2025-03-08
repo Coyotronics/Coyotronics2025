@@ -35,8 +35,8 @@ public class CoralIntake extends SubsystemBase {
 
         coral_pivot_motor.getEncoder().setPosition(0);
 
-        SmartDashboard.putString("INTAKE STATE", "IDLE");
-        SmartDashboard.putString("PIVOT STATE", "IDLE");
+        SmartDashboard.putString("CORAL INTAKE STATE", "IDLE");
+        SmartDashboard.putString("CORAL PIVOT STATE", "IDLE");
     }
 
     public void pivot() {
@@ -47,7 +47,7 @@ public class CoralIntake extends SubsystemBase {
                 }
                 coral_pivot_motor.set(0);
                 pivot_state = PivotStates.INTAKE;
-                SmartDashboard.putString("PIVOT STATE", "PIVOT INTAKE");
+                SmartDashboard.putString("CORAL PIVOT STATE", "PIVOT INTAKE");
                 break;
             
             case INTAKE:
@@ -56,7 +56,7 @@ public class CoralIntake extends SubsystemBase {
                 }
                 coral_pivot_motor.set(0);
                 pivot_state = PivotStates.SHOOT;
-                SmartDashboard.putString("PIVOT STATE", "PIVOT SHOOT");
+                SmartDashboard.putString("CORAL PIVOT STATE", "PIVOT SHOOT");
                 break;
         
             default:
@@ -73,13 +73,13 @@ public class CoralIntake extends SubsystemBase {
             case FORWARD:
                 coral_intake_motor.set(-0.2);
                 intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("INTAKE STATE", "CORAL INTAKE");
+                SmartDashboard.putString("CORAL INTAKE STATE", "CORAL INTAKE");
                 break;
             
             case REVERSE:
                 coral_intake_motor.set(0.2);
                 intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("INTAKE STATE", "CORAL OUTTAKE");
+                SmartDashboard.putString("CORAL INTAKE STATE", "CORAL OUTTAKE");
                 break;
             
             default:
