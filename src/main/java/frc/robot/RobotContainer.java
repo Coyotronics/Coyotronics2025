@@ -36,7 +36,7 @@ public class RobotContainer {
 
     // Joystick button_board = new Joystick(2);
     XboxController driver_controller = new XboxController(0);
-    // XboxController mani_controller = new XboxController(1); // Check ports
+    XboxController subsystem_controller = new XboxController(1);
 
     public SendableChooser<Command> sendable_chooser = new SendableChooser<>();
 
@@ -67,9 +67,9 @@ public class RobotContainer {
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (driver_controller.getAButtonReleased()) {
+                    if (subsystem_controller.getAButtonReleased()) {
                         coral_intake.pivot();
-                    } else if (driver_controller.getBButtonReleased()) {
+                    } else if (subsystem_controller.getBButtonReleased()) {
                         coral_intake.intake();
                     }
                 }, coral_intake));
@@ -85,9 +85,9 @@ public class RobotContainer {
         // Elevator Control
         elevator.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (driver_controller.getRightBumperButton()) {
+                    if (subsystem_controller.getRightBumperButton()) {
                         elevator.move_up();
-                    } else if (driver_controller.getLeftBumperButton()) {
+                    } else if (subsystem_controller.getLeftBumperButton()) {
                         elevator.move_down();
                     } else {
                         elevator.stop();
