@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Enums.ElevatorStates;
 
 public class Elevator extends SubsystemBase {
     private final double MAX_HEIGHT = 88;
@@ -19,6 +20,8 @@ public class Elevator extends SubsystemBase {
     private final SparkMax left_motor;
 
     private final PIDController pid_controller;
+
+    private ElevatorStates elevator_states = ElevatorStates.BOTTOM;
 
     public Elevator() {
         right_motor = new SparkMax(5, MotorType.kBrushless);
@@ -35,31 +38,26 @@ public class Elevator extends SubsystemBase {
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
     }
-    
-    public void manual_elevator_rise()
-    {
+
+    public void manual_elevator_rise() {
         right_motor.setVoltage(-4.0);
         left_motor.setVoltage(4.0);
 
     }
 
     public void move_up() {
-        double pid = calculate_pid(MAX_HEIGHT);
-
-        right_motor.set(-pid);
-        left_motor.set(pid);
+        right_motor.setVoltage(-4.0);
+        left_motor.setVoltage(4.0);
     }
 
     public void move_down() {
-        double pid = calculate_pid(MIN_HEIGHT);
-
-        right_motor.set(-pid);
-        left_motor.set(pid);
+        right_motor.setVoltage(4.0);
+        left_motor.setVoltage(-4.0);
     }
 
     public void pid_control(double setpoint) {
         double num = calculate_pid(setpoint);
-        
+
         right_motor.set(-num);
         left_motor.set(num);
     }
@@ -82,8 +80,7 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(Math.abs(right_motor.getEncoder().getPosition())>68.5)
-        {
+        if (Math.abs(right_motor.getEncoder().getPosition()) > 68.5) {
             right_motor.setVoltage(0.0);
             left_motor.setVoltage(0.0);
         }
