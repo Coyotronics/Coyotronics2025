@@ -32,7 +32,7 @@ public class RobotContainer {
     private final CoralIntake coral_intake = new CoralIntake();
     private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
-    private final Elevator elevator = new Elevator();
+  //  private final Elevator elevator = new Elevator();
 
     // Joystick button_board = new Joystick(2);
     XboxController driver_controller = new XboxController(0);
@@ -85,16 +85,7 @@ public class RobotContainer {
                 }, algae_intake));
 
         // Elevator Control
-        elevator.setDefaultCommand(new RunCommand(
-                () -> {
-                    if (subsystem_controller.getRightBumperButton()) {
-                        elevator.move_up();
-                    } else if (subsystem_controller.getLeftBumperButton()) {
-                        elevator.move_down();
-                    } else {
-                        elevator.stop();
-                    }
-                }, elevator));
+       
     }
 
     public DriveSubsystem getAutonomousCommand() {

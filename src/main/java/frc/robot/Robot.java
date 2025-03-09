@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -39,7 +40,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        
+
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
@@ -87,15 +88,17 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         DriveSubsystem drive = robot_container.getAutonomousCommand();
-        //placeholder
+        // placeholder
 
         Command swerveMobility = new SequentialCommandGroup(
-            new InstantCommand(() -> {drive.drive_robot_relative(new ChassisSpeeds(2.0, 0.0, 0.0));}, drive ),
-            new WaitCommand(2.0),
-            new InstantCommand(() -> {drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));}, drive ));
+                new InstantCommand(() -> {
+                    drive.drive_robot_relative(new ChassisSpeeds(0.5, 0.0, 0.0));
+                }, drive),
+                new WaitCommand(2),
+                new InstantCommand(() -> {
+                    drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));
+                }, drive));
 
-
-        
         swerveMobility.schedule();
     }
 
@@ -125,7 +128,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
-        
+
         CommandScheduler.getInstance().cancelAll();
     }
 
