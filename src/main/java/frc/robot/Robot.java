@@ -6,13 +6,18 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.DriveSubsystem;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -81,12 +86,17 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        autonomous_command = robot_container.getAutonomousCommand();
+        DriveSubsystem drive = robot_container.getAutonomousCommand();
         //placeholder
+
+        Command swerveMobility = new SequentialCommandGroup(
+            new InstantCommand(() -> {drive.drive_robot_relative(new ChassisSpeeds(2.0, 0.0, 0.0));}, drive ),
+            new WaitCommand(2.0),
+            new InstantCommand(() -> {drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));}, drive ));
+
+
         
-        if (autonomous_command != null) {
-            autonomous_command.schedule();
-        }
+        swerveMobility.schedule();
     }
 
     /** This function is called periodically during autonomous. */

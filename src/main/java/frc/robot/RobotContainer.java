@@ -97,7 +97,7 @@ public class RobotContainer {
                 }, elevator));
     }
 
-    public Command getAutonomousCommand() {
+    public DriveSubsystem getAutonomousCommand() {
        /*Pose2d source = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
 
         Pose2d reef = new Pose2d(3.668, -5.350, new Rotation2d(-80 * (Math.PI) / 180));*/
@@ -107,32 +107,34 @@ public class RobotContainer {
         // switch ((String) sendable_chooser.getSelected()) {
 
 
-        try {
+        // try {
 
-            /*List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                    robot_drive.get_pose(),
-                    source, reef);*/
+        //     /*List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        //             robot_drive.get_pose(),
+        //             source, reef);*/
 
-            Pose2d newPose = new Pose2d(robot_drive.get_pose().getX() + 1, robot_drive.get_pose().getY() + 1, robot_drive.get_pose().getRotation());
-            List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-                    robot_drive.get_pose(),
-                    newPose);
+        //     Pose2d newPose = new Pose2d(robot_drive.get_pose().getX() + 1, robot_drive.get_pose().getY() + 1, robot_drive.get_pose().getRotation());
+        //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+        //             robot_drive.get_pose(),
+        //             newPose);
 
-            PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
-                    Math.PI);
+        //     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
+        //             Math.PI);
 
-            PathPlannerPath path = new PathPlannerPath(
-                    waypoints,
-                    constraints,
-                    null,
-                    new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+        //     PathPlannerPath path = new PathPlannerPath(
+        //             waypoints,
+        //             constraints,
+        //             null,
+        //             new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
 
-            return AutoBuilder.followPath(path);
+        //     return AutoBuilder.followPath(path);
 
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
-        }
+        // } catch (Exception e) {
+        //     DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+        //     return Commands.none();
+        // }
+
+        return robot_drive;
 
     }
 
