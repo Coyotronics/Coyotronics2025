@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -50,7 +51,8 @@ public class DriveSubsystem extends SubsystemBase {
             RobotMeasurements.BACK_RIGHT_TURNING_CAN_ID,
             RobotMeasurements.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
-    private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    Pigeon2 gyro = new Pigeon2(5, "rio");        
+
 
     private double current_rotation = 0.0;
     private double current_translation_dir = 0.0;
@@ -267,10 +269,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double get_turn_rate() {
-        return gyro.getRate() * (RobotMeasurements.GYRO_REVERSED ? -1.0 : 1.0);
+        return gyro.getAngularVelocityZWorld().getValueAsDouble() * (RobotMeasurements.GYRO_REVERSED ? -1.0 : 1.0);
     }
 
     public double get_angle() {
-        return -(gyro.getAngle());
+        return -(gyro.getYaw().getValueAsDouble());
     }
 }
