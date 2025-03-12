@@ -4,26 +4,14 @@
 
 package frc.robot;
 
-import java.util.List;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.Constants.JoystickConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Elevator;
 
@@ -32,7 +20,7 @@ public class RobotContainer {
     private final CoralIntake coral_intake = new CoralIntake();
     private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
-  //  private final Elevator elevator = new Elevator();
+    private final Elevator elevator = new Elevator();
 
     // Joystick button_board = new Joystick(2);
     XboxController driver_controller = new XboxController(0);
@@ -41,11 +29,6 @@ public class RobotContainer {
     public SendableChooser<Command> sendable_chooser = new SendableChooser<>();
 
     public RobotContainer() {
-        if (driver_controller.getLeftTriggerAxis() == 1 && driver_controller.getRightTriggerAxis() == 1) {
-            field_centric = !field_centric;
-        }
-
-        // Configure default commands
         configureButtonBindings();
     }
 
@@ -55,11 +38,11 @@ public class RobotContainer {
                 new RunCommand(
                         () -> robot_drive.drive(
                                 -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.75,
-                                        JoystickConstants.DRIVE_DEADBAND),
+                                        SwerveConstants.DRIVE_DEADBAND),
                                 -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.75,
-                                        JoystickConstants.DRIVE_DEADBAND),
+                                        SwerveConstants.DRIVE_DEADBAND),
                                 -MathUtil.applyDeadband(driver_controller.getRightX() * 0.75,
-                                        JoystickConstants.DRIVE_DEADBAND),
+                                        SwerveConstants.DRIVE_DEADBAND),
                                 field_centric, true),
 
                         robot_drive));
@@ -85,48 +68,18 @@ public class RobotContainer {
                 }, algae_intake));
 
         // Elevator Control
-       
+        elevator.setDefaultCommand(new RunCommand(() -> {
+            if (subsystem_controller.getLeftBumperButton()) {
+                elevator.pid_control(40.8);
+            } else if (subsystem_controller.getRightBumperButton()) {
+                elevator.pid_control(68);
+            } else {
+                elevator.stop();
+            }
+        }, elevator));
     }
 
     public DriveSubsystem getAutonomousCommand() {
-       /*Pose2d source = new Pose2d(2.398, 0.674, new Rotation2d(57.8 * (Math.PI) / 180));
-
-        Pose2d reef = new Pose2d(3.668, -5.350, new Rotation2d(-80 * (Math.PI) / 180));*/
-        //unused for now
-
-        // Select the pose based on the selected option from the sendable chooser
-        // switch ((String) sendable_chooser.getSelected()) {
-
-
-        // try {
-
-        //     /*List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-        //             robot_drive.get_pose(),
-        //             source, reef);*/
-
-        //     Pose2d newPose = new Pose2d(robot_drive.get_pose().getX() + 1, robot_drive.get_pose().getY() + 1, robot_drive.get_pose().getRotation());
-        //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-        //             robot_drive.get_pose(),
-        //             newPose);
-
-        //     PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 *
-        //             Math.PI);
-
-        //     PathPlannerPath path = new PathPlannerPath(
-        //             waypoints,
-        //             constraints,
-        //             null,
-        //             new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
-
-        //     return AutoBuilder.followPath(path);
-
-        // } catch (Exception e) {
-        //     DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-        //     return Commands.none();
-        // }
-
         return robot_drive;
-
     }
-
 }

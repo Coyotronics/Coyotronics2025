@@ -13,7 +13,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
-import frc.robot.Constants.SparkMaxConfigs;
+import frc.robot.Constants.SwerveConstants;
 
 public class MAXSwerveModule {
     private final SparkMax driving_spark_max;
@@ -39,9 +39,9 @@ public class MAXSwerveModule {
         turning_pid_controller = turning_spark_max.getClosedLoopController();
 
 
-        driving_spark_max.configure(SparkMaxConfigs.get_driving_config(), ResetMode.kResetSafeParameters,
+        driving_spark_max.configure(SwerveConstants.get_driving_config(), ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        turning_spark_max.configure(SparkMaxConfigs.get_turning_config(), ResetMode.kResetSafeParameters,
+        turning_spark_max.configure(SwerveConstants.get_turning_config(), ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
         this.chassis_angular_offset = chassis_angular_offset;

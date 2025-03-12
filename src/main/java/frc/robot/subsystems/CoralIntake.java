@@ -12,12 +12,13 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
+import frc.robot.Constants.SubsystemConstants;
 import frc.robot.Enums.IntakeStates;
 import frc.robot.Enums.PivotStates;
 
 public class CoralIntake extends SubsystemBase {
-    SparkMax coral_intake_motor = new SparkMax(36, MotorType.kBrushless);
-    SparkMax coral_pivot_motor = new SparkMax(7, MotorType.kBrushless);
+    SparkMax coral_intake_motor = new SparkMax(SubsystemConstants.CORAL_INTAKE_MOTOR_ID, MotorType.kBrushless);
+    SparkMax coral_pivot_motor = new SparkMax(SubsystemConstants.CORAL_PIVOT_MOTOR_ID, MotorType.kBrushless);
 
     private IntakeStates intake_state = IntakeStates.FORWARD;
     private PivotStates pivot_state = PivotStates.INTAKE;

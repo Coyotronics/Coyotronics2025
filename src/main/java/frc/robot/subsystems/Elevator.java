@@ -12,6 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants.SubsystemConstants;
+
 public class Elevator extends SubsystemBase {
     private final SparkMax right_motor;
     private final SparkMax left_motor;
@@ -19,8 +21,8 @@ public class Elevator extends SubsystemBase {
     private final PIDController pid_controller;
 
     public Elevator() {
-        right_motor = new SparkMax(5, MotorType.kBrushless);
-        left_motor = new SparkMax(6, MotorType.kBrushless);
+        right_motor = new SparkMax(SubsystemConstants.ELEVATOR_RIGHT_MOTOR_ID, MotorType.kBrushless);
+        left_motor = new SparkMax(SubsystemConstants.ELEVATOR_LEFT_MOTOR_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
@@ -28,7 +30,8 @@ public class Elevator extends SubsystemBase {
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        pid_controller = new PIDController(0.02, 0, 0);
+        pid_controller = new PIDController(SubsystemConstants.ELEVATOR_PID_P, SubsystemConstants.ELEVATOR_PID_I,
+                SubsystemConstants.ELEVATOR_PID_D);
 
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
