@@ -12,18 +12,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Elevator extends SubsystemBase {
-    private final double MAX_HEIGHT = 88;
-    private final double MIN_HEIGHT = 1;
+import frc.robot.Constants.SubsystemConstants;
 
+public class Elevator extends SubsystemBase {
     private final SparkMax right_motor;
     private final SparkMax left_motor;
 
     private final PIDController pid_controller;
 
     public Elevator() {
-        right_motor = new SparkMax(5, MotorType.kBrushless);
-        left_motor = new SparkMax(6, MotorType.kBrushless);
+        right_motor = new SparkMax(SubsystemConstants.ELEVATOR_RIGHT_MOTOR_ID, MotorType.kBrushless);
+        left_motor = new SparkMax(SubsystemConstants.ELEVATOR_LEFT_MOTOR_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
         config.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
@@ -31,29 +30,32 @@ public class Elevator extends SubsystemBase {
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        pid_controller = new PIDController(0.02, 0, 0);
+        pid_controller = new PIDController(SubsystemConstants.ELEVATOR_PID_P, SubsystemConstants.ELEVATOR_PID_I,
+                SubsystemConstants.ELEVATOR_PID_D);
 
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
     }
 
-    public void move_up() {
-        double pid = calculate_pid(MAX_HEIGHT);
+    public void manual_elevator_rise() {
+        right_motor.setVoltage(-4.0);
+        left_motor.setVoltage(4.0);
 
-        right_motor.set(-pid);
-        left_motor.set(pid);
+    }
+
+    public void move_up() {
+        right_motor.setVoltage(-4.0);
+        left_motor.setVoltage(4.0);
     }
 
     public void move_down() {
-        double pid = calculate_pid(MIN_HEIGHT);
-
-        right_motor.set(-pid);
-        left_motor.set(pid);
+        right_motor.setVoltage(2.0);
+        left_motor.setVoltage(-2.0);
     }
 
     public void pid_control(double setpoint) {
         double num = calculate_pid(setpoint);
-        
+
         right_motor.set(-num);
         left_motor.set(num);
     }
@@ -76,6 +78,16 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator Height", get_height());
+        if (get_height() > 39 && get_height() < 41) {
+            SmartDashboard.putBoolean("L2 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L2 Ready", false);
+        }
+
+        if (get_height() > 67 && get_height() < 69) {
+            SmartDashboard.putBoolean("L3 Ready", true);
+        } else {
+            SmartDashboard.putBoolean("L3 Ready", false);
+        }
     }
 }

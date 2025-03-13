@@ -4,9 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.DriveSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,12 +27,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 
- //Motor1 should be negative
- //Motor2 should be positive
-
 public class Robot extends TimedRobot {
     private Command autonomous_command;
-
     private RobotContainer robot_container;
 
     /**
@@ -33,10 +38,14 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
         // autonomous chooser on the dashboard.
         robot_container = new RobotContainer();
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+        ShuffleboardTab tab = Shuffleboard.getTab("Camera");
+        tab.add(camera);
     }
 
     /**
@@ -76,11 +85,19 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        autonomous_command = robot_container.getAutonomousCommand();
-        
-        if (autonomous_command != null) {
-            autonomous_command.schedule();
-        }
+        DriveSubsystem drive = robot_container.getAutonomousCommand();
+        // placeholder
+
+        Command swerveMobility = new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    drive.drive_robot_relative(new ChassisSpeeds(0.5, 0.0, 0.0));
+                }, drive),
+                new WaitCommand(2),
+                new InstantCommand(() -> {
+                    drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));
+                }, drive));
+
+        swerveMobility.schedule();
     }
 
     /** This function is called periodically during autonomous. */
@@ -103,13 +120,13 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        // Periodic Methods (Not recommended for regular use)
         Telemetery.update();
     }
 
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
+
         CommandScheduler.getInstance().cancelAll();
     }
 

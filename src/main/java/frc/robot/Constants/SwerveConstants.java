@@ -1,6 +1,8 @@
 package frc.robot.Constants;
 
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class SwerveConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
@@ -25,7 +27,8 @@ public class SwerveConstants {
     public static final double DRIVING_MOTOR_REDUCTION = (45.0 * 22) / (DRIVING_MOTOR_PINION_TEETH * 15);
 
     // Free speed of the drive wheel in rotations per second
-    public static final double DRIVE_WHEEL_FREE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS)
+    public static final double DRIVE_WHEEL_FREE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS
+            * WHEEL_CIRCUMFERENCE_METERS)
             / DRIVING_MOTOR_REDUCTION;
 
     // Conversion factor for driving encoder position to meters
@@ -65,14 +68,66 @@ public class SwerveConstants {
     public static final double TURNING_MAX_OUTPUT = 1;
 
     // Idle mode for driving motor
-    public static final IdleMode DRIVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode DRIVING_MOTOR_IDLE_MODE = IdleMode.kCoast;
 
     // Idle mode for turning motor
-    public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kCoast;
 
     // Current limit for driving motor in amps
     public static final int DRIVING_MOTOR_CURRENT_LIMIT = 50;
 
     // Current limit for turning motor in amps
     public static final int TURNING_MOTOR_CURRENT_LIMIT = 20;
+
+    // Deadband for driving input
+    public static final double DRIVE_DEADBAND = 0.05;
+
+    public static SparkMaxConfig get_driving_config() {
+        SparkMaxConfig config = new SparkMaxConfig();
+
+        // driving motor configuration
+        config
+                .idleMode(DRIVING_MOTOR_IDLE_MODE)
+                .smartCurrentLimit(DRIVING_MOTOR_CURRENT_LIMIT);
+
+        // driving motor encoder configuration
+        config.encoder
+                .positionConversionFactor(DRIVING_ENCODER_POSITION_FACTOR)
+                .velocityConversionFactor(DRIVING_ENCODER_VELOCITY_FACTOR);
+
+        // driving motor PID controller configuration
+        config.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .pidf(DRIVING_P, DRIVING_I, DRIVING_D,
+                        DRIVING_FF)
+                .outputRange(DRIVING_MIN_OUTPUT, DRIVING_MAX_OUTPUT);
+
+        return config;
+    }
+
+    public static SparkMaxConfig get_turning_config() {
+        SparkMaxConfig config = new SparkMaxConfig();
+
+        // turning motor configuration
+        config.idleMode(TURNING_MOTOR_IDLE_MODE)
+                .smartCurrentLimit(TURNING_MOTOR_CURRENT_LIMIT);
+
+        // turning motor encoder configuration
+        config.absoluteEncoder
+                .positionConversionFactor(TURNING_ENCODER_POSITION_FACTOR)
+                .velocityConversionFactor(TURNING_ENCODER_VELOCITY_FACTOR)
+                .inverted(TURNING_ENCODER_INVERTED);
+
+        // turning motor PID controller configuration
+        config.closedLoop
+                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+                .pidf(TURNING_P, TURNING_I, TURNING_D,
+                        TURNING_FF)
+                .outputRange(TURNING_MIN_OUTPUT, TURNING_MAX_OUTPUT)
+                .positionWrappingEnabled(true)
+                .positionWrappingInputRange(TURNING_ENCODER_POSITION_PID_MIN_INPUT,
+                        TURNING_ENCODER_POSITION_PID_MAX_INPUT);
+
+        return config;
+    }
 }

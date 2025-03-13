@@ -21,7 +21,6 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 // import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.RobotMeasurements;
@@ -103,8 +102,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro Angle", get_angle());
-
         odometry.update(
                 Rotation2d.fromDegrees(get_angle()),
                 new SwerveModulePosition[] {
@@ -151,9 +148,6 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double x_speed, double y_speed, double rotation, boolean field_relative, boolean rate_limit) {
         double x_speed_commanded;
         double y_speed_commanded;
-        SmartDashboard.putNumber("XSpeed", x_speed);
-        SmartDashboard.putNumber("YSpeed", y_speed);
-        SmartDashboard.putNumber("Rotation", rotation);
 
         Telemetery.measured_states_obj[0] = front_left.get_state();
         Telemetery.measured_states_obj[1] = front_right.get_state();
@@ -211,9 +205,6 @@ public class DriveSubsystem extends SubsystemBase {
             y_speed_commanded = y_speed;
             current_rotation = rotation;
         }
-
-        SmartDashboard.putNumber("front left driving", front_left.get_volatge_driving());
-        SmartDashboard.putNumber("front left turning", front_left.get_voltage_turning());
 
         double x_speed_delivered = x_speed_commanded * RobotMeasurements.MAX_SPEED_METERS_PER_SECOND;
         double y_speed_delivered = y_speed_commanded * RobotMeasurements.MAX_SPEED_METERS_PER_SECOND;
