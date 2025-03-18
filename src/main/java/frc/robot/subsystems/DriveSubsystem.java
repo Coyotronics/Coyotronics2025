@@ -17,9 +17,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.util.WPIUtilJNI;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-// import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.RobotMeasurements;
@@ -49,7 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
             RobotMeasurements.BACK_RIGHT_TURNING_CAN_ID,
             RobotMeasurements.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
-    private final ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+    private final Pigeon2 gyro = new Pigeon2(34);  
 
     private double current_rotation = 0.0;
     private double current_translation_dir = 0.0;
@@ -100,6 +100,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Motor 1 turning",front_left.get_position().angle.getDegrees());
+        SmartDashboard.putNumber("Motor 2 turning",front_right.get_position().angle.getDegrees());
+        SmartDashboard.putNumber("Motor 3 turning",back_left.get_position().angle.getDegrees());
+        SmartDashboard.putNumber("Motor 4 turning",back_right.get_position().angle.getDegrees());
+    
         odometry.update(
                 Rotation2d.fromDegrees(get_angle()),
                 new SwerveModulePosition[] {
@@ -258,10 +263,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double get_turn_rate() {
-        return gyro.getRate() * (RobotMeasurements.GYRO_REVERSED ? -1.0 : 1.0);
+        return gyro.getAngularVelocityZWorld().getValueAsDouble() * (RobotMeasurements.GYRO_REVERSED ? -1.0 : 1.0);
     }
 
     public double get_angle() {
-        return -(gyro.getAngle());
+        return -(gyro.getYaw().getValueAsDouble());
     }
 }
