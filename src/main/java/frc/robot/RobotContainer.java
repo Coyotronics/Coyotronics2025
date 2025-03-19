@@ -82,4 +82,12 @@ public class RobotContainer {
     public DriveSubsystem getAutonomousCommand() {
         return robot_drive;
     }
+
+    public Elevator getElevator() {
+        return elevator;
+    }
+
+    public CoralIntake getCoralIntak() {
+        return coral_intake;
+    }
 }
