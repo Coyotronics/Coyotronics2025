@@ -8,6 +8,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +20,8 @@ public class Elevator extends SubsystemBase {
     private final SparkMax left_motor;
 
     private final PIDController pid_controller;
+    
+    private final ElevatorFeedforward elevatorFF = new ElevatorFeedforward(0.0,0.0,0.0,0.0);
 
     public Elevator() {
         right_motor = new SparkMax(SubsystemConstants.ELEVATOR_RIGHT_MOTOR_ID, MotorType.kBrushless);
@@ -70,7 +73,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private double calculate_pid(double setpoint) {
-        double output = pid_controller.calculate(get_height(), setpoint);
+        double output = pid_controller.calculate(get_height(), setpoint)+elevatorFF.calculate(setpoint);
         output = MathUtil.clamp(output, -1.0, 1.0);
 
         return output;

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -86,6 +90,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         DriveSubsystem drive = robot_container.getAutonomousCommand();
+        CoralIntake coral_intake = robot_container.getCoralIntak();
+        Elevator elevator = robot_container.getElevator();
         // placeholder
 
         Command swerveMobility = new SequentialCommandGroup(
@@ -97,7 +103,38 @@ public class Robot extends TimedRobot {
                     drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));
                 }, drive));
 
+        Command coralL2Score = new SequentialCommandGroup(new InstantCommand(() -> {
+            drive.drive_robot_relative(new ChassisSpeeds(0.5, 0.0, 0.0));
+        }, drive),
+                new WaitCommand(2),
+
+                new InstantCommand(() -> {
+                    drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));
+                }, drive),
+
+                (new InstantCommand(() -> {
+                    elevator.move_up();
+                }, elevator)),
+
+                new WaitCommand(2),
+
+                (new InstantCommand(() -> {
+                    coral_intake.pivot();
+                }, coral_intake)),
+                
+                new WaitCommand(2),
+
+                (new InstantCommand(() -> {
+                    coral_intake.intake();
+                }, coral_intake))
+
+
+                );
+
         swerveMobility.schedule();
+
+        //once ready uncomment this for hopefully L2 RuntimeJsonMappingException
+        //coralL2Score.schedule();
     }
 
     /** This function is called periodically during autonomous. */
