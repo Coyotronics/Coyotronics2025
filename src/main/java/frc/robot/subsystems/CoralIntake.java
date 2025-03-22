@@ -69,28 +69,24 @@ public class CoralIntake extends SubsystemBase {
         return coral_pivot_motor.getEncoder().getPosition();
     }
 
-    private void set_intake_speed(double speed) {
-        coral_intake_motor.set(speed);
-    }
-
     public void intake() {
         switch (intake_state) {
             case IDLE:
-                set_intake_speed(-0.4);
-                intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("ALGAE INTAKE", "ALGAE INTAKE");
+                coral_intake_motor.set(0.5);
+                intake_state = IntakeStates.FORWARD;
                 break;
 
             case FORWARD:
-                set_intake_speed(0);
-                intake_state = IntakeStates.IDLE;
-                SmartDashboard.putString("ALGAE INTAKE", "ALGAE IDLE");
+                coral_intake_motor.set(0);
+                intake_state = IntakeStates.REVERSE;
                 break;
 
             case REVERSE:
-                set_intake_speed(0.4);
-                intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("ALGAE INTAKE", "ALGAE OUTTAKE");
+                coral_intake_motor.set(-0.5);
+                intake_state = IntakeStates.IDLE;
+                break;
+
+            default:
                 break;
         }
     }

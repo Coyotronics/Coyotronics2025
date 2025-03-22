@@ -42,19 +42,22 @@ public class AlgaeIntake extends SubsystemBase {
     }
 
     public void intake() {
-        switch (intake_state) {            
+        switch (intake_state) {
+            case IDLE:
+                set_intake_speed(0.5);
+                intake_state = IntakeStates.FORWARD;
+                break;
+
             case FORWARD:
-                set_intake_speed(-0.4);
+                set_intake_speed(0);
                 intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("ALGAE INTAKE","ALGAE INTAKE");
                 break;
 
             case REVERSE:
-                set_intake_speed(0.4);
-                intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("ALGAE INTAKE","ALGAE OUTTAKE");
+                set_intake_speed(-0.5);
+                intake_state = IntakeStates.IDLE;
                 break;
-        
+
             default:
                 break;
         }
