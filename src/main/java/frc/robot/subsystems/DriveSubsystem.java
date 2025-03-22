@@ -19,6 +19,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -49,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
             RobotMeasurements.BACK_RIGHT_TURNING_CAN_ID,
             RobotMeasurements.BACK_RIGHT_CHASSIS_ANGULAR_OFFSET);
 
-    private final Pigeon2 gyro = new Pigeon2(34);  
+    private final Pigeon2 gyro = new Pigeon2(34);
 
     private double current_rotation = 0.0;
     private double current_translation_dir = 0.0;
@@ -68,6 +69,8 @@ public class DriveSubsystem extends SubsystemBase {
                     back_left.get_position(),
                     back_right.get_position()
             });
+
+    private Field2d field = new Field2d();
 
     public DriveSubsystem() {
         RobotConfig config = null;
@@ -96,15 +99,12 @@ public class DriveSubsystem extends SubsystemBase {
                     return false;
                 },
                 this);
+
+        SmartDashboard.putData("Field", field);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Motor 1 turning",front_left.get_position().angle.getDegrees());
-        SmartDashboard.putNumber("Motor 2 turning",front_right.get_position().angle.getDegrees());
-        SmartDashboard.putNumber("Motor 3 turning",back_left.get_position().angle.getDegrees());
-        SmartDashboard.putNumber("Motor 4 turning",back_right.get_position().angle.getDegrees());
-    
         odometry.update(
                 Rotation2d.fromDegrees(get_angle()),
                 new SwerveModulePosition[] {
@@ -113,6 +113,8 @@ public class DriveSubsystem extends SubsystemBase {
                         back_left.get_position(),
                         back_right.get_position()
                 });
+
+        field.setRobotPose(odometry.getPoseMeters());
     }
 
     public Pose2d get_pose() {
