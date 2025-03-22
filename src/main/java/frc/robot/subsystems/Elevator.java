@@ -25,7 +25,7 @@ public class Elevator extends SubsystemBase {
         left_motor = new SparkMax(SubsystemConstants.ELEVATOR_LEFT_MOTOR_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(15).idleMode(IdleMode.kBrake);
+        config.smartCurrentLimit(30).idleMode(IdleMode.kBrake);
 
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -35,11 +35,6 @@ public class Elevator extends SubsystemBase {
 
         right_motor.getEncoder().setPosition(0);
         left_motor.getEncoder().setPosition(0);
-    }
-
-    public void manual_elevator_rise() {
-        right_motor.setVoltage(-4.0);
-        left_motor.setVoltage(4.0);
     }
 
     public void move_up() {
@@ -60,8 +55,15 @@ public class Elevator extends SubsystemBase {
     }
 
     public void stop() {
-        right_motor.setVoltage(-0.38);
-        left_motor.setVoltage(0.38);
+        if (get_height() > 0.2) {
+            right_motor.setVoltage(-0.38);
+            left_motor.setVoltage(0.38);
+
+            return;
+        }
+
+        right_motor.setVoltage(0);
+        left_motor.setVoltage(0);
     }
 
     private double get_height() {
@@ -78,17 +80,5 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Elevator Height", get_height());
-
-        if (get_height() > 39 && get_height() < 41) {
-            SmartDashboard.putBoolean("L2 Ready", true);
-        } else {
-            SmartDashboard.putBoolean("L2 Ready", false);
-        }
-
-        if (get_height() > 67 && get_height() < 69) {
-            SmartDashboard.putBoolean("L3 Ready", true);
-        } else {
-            SmartDashboard.putBoolean("L3 Ready", false);
-        }
     }
 }

@@ -2,7 +2,7 @@ package frc.robot;
 
 public class Enums {
     public enum IntakeStates {
-        FORWARD, REVERSE
+        IDLE, FORWARD, REVERSE
     }
 
     public enum PivotStates {

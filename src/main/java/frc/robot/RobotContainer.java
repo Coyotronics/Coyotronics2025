@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Elevator;
 
 public class RobotContainer {
-    static boolean field_centric = true;
+    static boolean field_centric = false;
     private final CoralIntake coral_intake = new CoralIntake();
     private final AlgaeIntake algae_intake = new AlgaeIntake();
     private final DriveSubsystem robot_drive = new DriveSubsystem();
@@ -36,42 +36,48 @@ public class RobotContainer {
         // Drive Control
         robot_drive.setDefaultCommand(
                 new RunCommand(
-                        () -> robot_drive.drive(
-                                -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.75,
-                                        SwerveConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.75,
-                                        SwerveConstants.DRIVE_DEADBAND),
-                                -MathUtil.applyDeadband(driver_controller.getRightX() * 0.75,
-                                        SwerveConstants.DRIVE_DEADBAND),
-                                field_centric, true),
+                        () -> {
+                            robot_drive.drive(
+                                    -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.75,
+                                            SwerveConstants.DRIVE_DEADBAND),
+                                    -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.75,
+                                            SwerveConstants.DRIVE_DEADBAND),
+                                    -MathUtil.applyDeadband(driver_controller.getRightX() * 0.75,
+                                            SwerveConstants.DRIVE_DEADBAND),
+                                    field_centric, true);
+
+                            if (driver_controller.getXButtonReleased()) {
+                                robot_drive.zero_heading();
+                            }
+                        },
 
                         robot_drive));
 
         // Coral Intake
         coral_intake.setDefaultCommand(new RunCommand(
                 () -> {
-                    if (subsystem_controller.getAButtonReleased()) {
+                    if (driver_controller.getAButtonReleased()) {
                         coral_intake.pivot();
-                    } else if (subsystem_controller.getBButtonReleased()) {
+                    } else if (driver_controller.getBButtonReleased()) {
                         coral_intake.intake();
                     }
                 }, coral_intake));
 
         // Algae Intake
-        algae_intake.setDefaultCommand(new RunCommand(
-                () -> {
-                    if (driver_controller.getXButtonReleased()) {
-                        algae_intake.intake();
-                    } else if (driver_controller.getYButtonReleased()) {
-                        algae_intake.pivot();
-                    }
-                }, algae_intake));
+        // algae_intake.setDefaultCommand(new RunCommand(
+        // () -> {
+        // if (driver_controller.getXButtonReleased()) {
+        // algae_intake.intake();
+        // } else if (driver_controller.getYButtonReleased()) {
+        // algae_intake.pivot();
+        // }
+        // }, algae_intake));
 
         // Elevator Control
         elevator.setDefaultCommand(new RunCommand(() -> {
-            if (subsystem_controller.getLeftBumperButton()) {
-                elevator.pid_control(40.8);
-            } else if (subsystem_controller.getRightBumperButton()) {
+            if (driver_controller.getLeftBumperButton()) {
+                elevator.move_down();
+            } else if (driver_controller.getRightBumperButton()) {
                 elevator.pid_control(68);
             } else {
                 elevator.stop();

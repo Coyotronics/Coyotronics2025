@@ -50,7 +50,7 @@ public class CoralIntake extends SubsystemBase {
                 pivot_state = PivotStates.INTAKE;
                 SmartDashboard.putString("CORAL PIVOT STATE", "PIVOT INTAKE");
                 break;
-            
+
             case INTAKE:
                 while (get_pivot_position() > 5.8) {
                     coral_pivot_motor.set(-0.2);
@@ -59,7 +59,7 @@ public class CoralIntake extends SubsystemBase {
                 pivot_state = PivotStates.SHOOT;
                 SmartDashboard.putString("CORAL PIVOT STATE", "PIVOT SHOOT");
                 break;
-        
+
             default:
                 break;
         }
@@ -69,21 +69,28 @@ public class CoralIntake extends SubsystemBase {
         return coral_pivot_motor.getEncoder().getPosition();
     }
 
+    private void set_intake_speed(double speed) {
+        coral_intake_motor.set(speed);
+    }
+
     public void intake() {
-        switch (intake_state) {           
-            case FORWARD:
-                coral_intake_motor.set(-0.2);
+        switch (intake_state) {
+            case IDLE:
+                set_intake_speed(-0.4);
                 intake_state = IntakeStates.REVERSE;
-                SmartDashboard.putString("CORAL INTAKE STATE", "CORAL INTAKE");
+                SmartDashboard.putString("ALGAE INTAKE", "ALGAE INTAKE");
                 break;
-            
+
+            case FORWARD:
+                set_intake_speed(0);
+                intake_state = IntakeStates.IDLE;
+                SmartDashboard.putString("ALGAE INTAKE", "ALGAE IDLE");
+                break;
+
             case REVERSE:
-                coral_intake_motor.set(0.2);
+                set_intake_speed(0.4);
                 intake_state = IntakeStates.FORWARD;
-                SmartDashboard.putString("CORAL INTAKE STATE", "CORAL OUTTAKE");
-                break;
-            
-            default:
+                SmartDashboard.putString("ALGAE INTAKE", "ALGAE OUTTAKE");
                 break;
         }
     }

@@ -19,6 +19,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -101,10 +102,12 @@ public class DriveSubsystem extends SubsystemBase {
                 this);
 
         SmartDashboard.putData("Field", field);
+        gyro.reset();
     }
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Gyro Rotation",gyro.getYaw().getValueAsDouble());
         odometry.update(
                 Rotation2d.fromDegrees(get_angle()),
                 new SwerveModulePosition[] {
@@ -269,6 +272,16 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double get_angle() {
-        return -(gyro.getYaw().getValueAsDouble());
+        //Imma find the boolean later
+
+        if(DriverStation.getAlliance().get()!=Alliance.Red)
+        {
+            return (gyro.getYaw().getValueAsDouble()); 
+        }
+        else
+        {   
+            return -(gyro.getYaw().getValueAsDouble());
+        }
+
     }
 }
