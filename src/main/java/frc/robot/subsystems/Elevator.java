@@ -40,12 +40,11 @@ public class Elevator extends SubsystemBase {
     public void manual_elevator_rise() {
         right_motor.setVoltage(-4.0);
         left_motor.setVoltage(4.0);
-
     }
 
     public void move_up() {
-        right_motor.setVoltage(-4.0);
-        left_motor.setVoltage(4.0);
+        right_motor.setVoltage(-4);
+        left_motor.setVoltage(4);
     }
 
     public void move_down() {
@@ -61,8 +60,8 @@ public class Elevator extends SubsystemBase {
     }
 
     public void stop() {
-        right_motor.setVoltage(0);
-        left_motor.setVoltage(0);
+        right_motor.setVoltage(-0.38);
+        left_motor.setVoltage(0.38);
     }
 
     private double get_height() {
@@ -78,6 +77,8 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Elevator Height", get_height());
+
         if (get_height() > 39 && get_height() < 41) {
             SmartDashboard.putBoolean("L2 Ready", true);
         } else {
