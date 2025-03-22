@@ -16,11 +16,13 @@ import frc.robot.Enums.IntakeStates;
 import frc.robot.Enums.PivotStates;
 
 public class AlgaeIntake extends SubsystemBase {
-    private SparkMax intake_motor_right = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_RIGHT_ID, MotorType.kBrushless);
-    private SparkMax intake_motor_left = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_LEFT_ID, MotorType.kBrushless);
+    private SparkMax intake_motor_right = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_RIGHT_ID,
+            MotorType.kBrushless);
+    private SparkMax intake_motor_left = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_LEFT_ID,
+            MotorType.kBrushless);
     private SparkMax pivot_motor = new SparkMax(SubsystemConstants.ALGAE_PIVOT_MOTOR_ID, MotorType.kBrushless);
 
-    private IntakeStates intake_state = IntakeStates.FORWARD;
+    private IntakeStates intake_state = IntakeStates.IDLE;
     private PivotStates pivot_states = PivotStates.INTAKE;
 
     public AlgaeIntake() {
@@ -44,18 +46,28 @@ public class AlgaeIntake extends SubsystemBase {
     public void intake() {
         switch (intake_state) {
             case IDLE:
-                set_intake_speed(0.5);
-                intake_state = IntakeStates.FORWARD;
-                break;
-
-            case FORWARD:
                 set_intake_speed(0);
                 intake_state = IntakeStates.REVERSE;
                 break;
 
             case REVERSE:
                 set_intake_speed(-0.5);
-                intake_state = IntakeStates.IDLE;
+                intake_state = IntakeStates.STOP_1;
+                break;
+
+            case STOP_1:
+                set_intake_speed(0);
+                intake_state = IntakeStates.FORWARD;
+                break;
+
+            case FORWARD:
+                set_intake_speed(0.5);
+                intake_state = IntakeStates.STOP_2;
+                break;
+
+            case STOP_2:
+                set_intake_speed(0);
+                intake_state = IntakeStates.REVERSE;
                 break;
 
             default:
@@ -73,7 +85,7 @@ public class AlgaeIntake extends SubsystemBase {
                 pivot_states = PivotStates.INTAKE;
                 SmartDashboard.putString("ALGAE PIVOT STATE", "UP");
                 break;
-            
+
             case INTAKE:
                 while (pivot_motor.getEncoder().getPosition() > 5.8) {
                     pivot_motor.set(-0.2);
@@ -82,7 +94,7 @@ public class AlgaeIntake extends SubsystemBase {
                 pivot_states = PivotStates.SHOOT;
                 SmartDashboard.putString("ALGAE PIVOT STATE", "DOWN");
                 break;
-        
+
             default:
                 break;
         }
