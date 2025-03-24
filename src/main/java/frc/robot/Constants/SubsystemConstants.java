@@ -1,4 +1,4 @@
-package frc.robot.Constants;
+package frc.robot.constants;
 
 public class SubsystemConstants {
     public static final int CORAL_INTAKE_MOTOR_ID = 36;
