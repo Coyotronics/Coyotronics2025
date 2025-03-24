@@ -8,8 +8,8 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.ScoringCommands;
+import frc.robot.commands.CoralScoring;
+import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -22,7 +22,7 @@ public class RobotContainer {
     private final AlgaeSubsystem algae_subsystem = new AlgaeSubsystem();
     private final DriveSubsystem drive_subsystem = new DriveSubsystem();
     private final ElevatorSubsystem elevator_subsystem = new ElevatorSubsystem();
-    private final ScoringCommands scoring_commands = new ScoringCommands(elevator_subsystem, coral_subsystem,
+    private final CoralScoring coral_scoring_commands = new CoralScoring(elevator_subsystem, coral_subsystem,
             algae_subsystem);
 
     // Joystick button_board = new Joystick(2);
@@ -34,7 +34,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        // Drive Control
         drive_subsystem.setDefaultCommand(
                 new RunCommand(
                         () -> {
@@ -54,9 +53,9 @@ public class RobotContainer {
 
                         drive_subsystem));
 
-        driver_controller.rightBumper().onTrue(scoring_commands.l3_score());
-        driver_controller.leftBumper().onTrue(scoring_commands.l2_score());
-        driver_controller.a().onTrue(scoring_commands.get_coral());
+        driver_controller.rightBumper().onTrue(coral_scoring_commands.l3_score());
+        driver_controller.leftBumper().onTrue(coral_scoring_commands.l2_score());
+        driver_controller.a().onTrue(coral_scoring_commands.get_coral());
     }
 
     public DriveSubsystem getAutonomousCommand() {
