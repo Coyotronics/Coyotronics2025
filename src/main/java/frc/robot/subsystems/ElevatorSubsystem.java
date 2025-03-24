@@ -11,12 +11,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.SubsystemConstants;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax right_motor;
