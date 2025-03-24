@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.SubsystemConstants;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -16,8 +17,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-
-import frc.robot.Constants.SubsystemConstants;
 
 public class CoralSubsystem extends SubsystemBase {
     SparkMax coral_intake_motor = new SparkMax(SubsystemConstants.CORAL_INTAKE_MOTOR_ID, MotorType.kBrushless);
@@ -33,9 +32,6 @@ public class CoralSubsystem extends SubsystemBase {
 
         coral_intake_motor.configure(intake_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         coral_pivot_motor.configure(pivot_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        SmartDashboard.putString("CORAL INTAKE STATE", "IDLE");
-        SmartDashboard.putString("CORAL PIVOT STATE", "IDLE");
     }
 
     @Override
@@ -46,8 +42,8 @@ public class CoralSubsystem extends SubsystemBase {
     public Command pivot_to_intake() {
         return parallel(
             runOnce(() -> coral_pivot_motor.set(0.2)),
-            waitUntil(() -> get_pivot_position() >= 0.4).andThen(() -> coral_pivot_motor.set(0))
-        ).onlyIf(() -> get_pivot_position() < 0.4);
+            waitUntil(() -> get_pivot_position() >= 0.5).andThen(() -> coral_pivot_motor.set(0))
+        ).onlyIf(() -> get_pivot_position() < 0.5);
     }
 
     public Command pivot_to_shoot() {
