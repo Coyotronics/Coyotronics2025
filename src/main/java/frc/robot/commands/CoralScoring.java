@@ -8,12 +8,12 @@ import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ScoringCommands {
+public class CoralScoring {
     ElevatorSubsystem elevator_subsystem;
     CoralSubsystem coral_subsystem;
     AlgaeSubsystem algae_subsystem;
 
-    public ScoringCommands(ElevatorSubsystem elevator_subsystem, CoralSubsystem coral_subsystem, AlgaeSubsystem algae_subsystem) {
+    public CoralScoring(ElevatorSubsystem elevator_subsystem, CoralSubsystem coral_subsystem, AlgaeSubsystem algae_subsystem) {
         this.elevator_subsystem = elevator_subsystem;
         this.coral_subsystem = coral_subsystem;
         this.algae_subsystem = algae_subsystem;
