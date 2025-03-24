@@ -15,7 +15,7 @@ import frc.robot.Constants.SubsystemConstants;
 import frc.robot.Enums.IntakeStates;
 import frc.robot.Enums.PivotStates;
 
-public class AlgaeIntake extends SubsystemBase {
+public class AlgaeSubsystem extends SubsystemBase {
     private SparkMax intake_motor_right = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_RIGHT_ID,
             MotorType.kBrushless);
     private SparkMax intake_motor_left = new SparkMax(SubsystemConstants.ALGAE_INTAKE_MOTOR_LEFT_ID,
@@ -25,7 +25,7 @@ public class AlgaeIntake extends SubsystemBase {
     private IntakeStates intake_state = IntakeStates.IDLE;
     private PivotStates pivot_states = PivotStates.INTAKE;
 
-    public AlgaeIntake() {
+    public AlgaeSubsystem() {
         SparkMaxConfig intake_config = new SparkMaxConfig();
         SparkMaxConfig pivot_config = new SparkMaxConfig();
 

@@ -10,17 +10,21 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.SubsystemConstants;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 
-public class Elevator extends SubsystemBase {
+public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax right_motor;
     private final SparkMax left_motor;
 
     private final PIDController pid_controller;
 
-    public Elevator() {
+    public ElevatorSubsystem() {
         right_motor = new SparkMax(SubsystemConstants.ELEVATOR_RIGHT_MOTOR_ID, MotorType.kBrushless);
         left_motor = new SparkMax(SubsystemConstants.ELEVATOR_LEFT_MOTOR_ID, MotorType.kBrushless);
 
@@ -47,11 +51,22 @@ public class Elevator extends SubsystemBase {
         left_motor.setVoltage(-2.0);
     }
 
-    public void pid_control(double setpoint) {
-        double num = calculate_pid(setpoint);
+    // public void pid_control(double setpoint) {
+    // double num = calculate_pid(setpoint);
 
-        right_motor.set(-num);
-        left_motor.set(num);
+    // right_motor.set(-num);
+    // left_motor.set(num);
+    // }
+
+    public Command pid_controll(double setpoint) {
+        return run(
+            () -> {
+                double num = calculate_pid(setpoint);
+
+                right_motor.set(-num);
+                left_motor.set(num);
+            }
+        ).until(() -> Math.round(calculate_pid(setpoint)) == 0);
     }
 
     public void stop() {
@@ -79,6 +94,7 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
+        stop();
         SmartDashboard.putNumber("Elevator Height", get_height());
     }
 }
