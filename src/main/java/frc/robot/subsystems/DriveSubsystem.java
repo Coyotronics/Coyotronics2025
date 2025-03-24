@@ -24,11 +24,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.Constants.RobotMeasurements;
-import frc.robot.Constants.SwerveConstants;
 import frc.utils.SwerveUtils;
 import frc.robot.LimelightHelpers;
+import frc.robot.constants.RobotMeasurements;
+import frc.robot.constants.SwerveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
     private final MAXSwerveModule front_left = new MAXSwerveModule(

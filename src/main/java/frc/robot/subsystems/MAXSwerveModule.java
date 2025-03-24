@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.constants.SwerveConstants;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.AbsoluteEncoder;
@@ -12,8 +13,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-
-import frc.robot.Constants.SwerveConstants;
 
 public class MAXSwerveModule {
     private final SparkMax driving_spark_max;

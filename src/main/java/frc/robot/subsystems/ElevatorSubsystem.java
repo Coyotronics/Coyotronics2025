@@ -12,8 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.Constants.SubsystemConstants;
+import frc.robot.constants.SubsystemConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
     private final SparkMax right_motor;
@@ -47,14 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         right_motor.setVoltage(2.0);
         left_motor.setVoltage(-2.0);
     }
-
-    // public void pid_control(double setpoint) {
-    // double num = calculate_pid(setpoint);
-
-    // right_motor.set(-num);
-    // left_motor.set(num);
-    // }
-
+    
     public Command pid_controll(double setpoint) {
         return run(
             () -> {
