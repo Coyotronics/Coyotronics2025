@@ -4,29 +4,30 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.subsystems.AlgaeIntake;
-import frc.robot.subsystems.CoralIntake;
+import frc.robot.commands.ScoringCommands;
+import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 public class RobotContainer {
     static boolean field_centric = false;
-    private final CoralIntake coral_intake = new CoralIntake();
-    private final AlgaeIntake algae_intake = new AlgaeIntake();
-    private final DriveSubsystem robot_drive = new DriveSubsystem();
-    private final Elevator elevator = new Elevator();
+    private final CoralSubsystem coral_subsystem = new CoralSubsystem();
+    private final AlgaeSubsystem algae_subsystem = new AlgaeSubsystem();
+    private final DriveSubsystem drive_subsystem = new DriveSubsystem();
+    private final ElevatorSubsystem elevator_subsystem = new ElevatorSubsystem();
+    private final ScoringCommands scoring_commands = new ScoringCommands(elevator_subsystem, coral_subsystem,
+            algae_subsystem);
 
     // Joystick button_board = new Joystick(2);
-    XboxController driver_controller = new XboxController(0);
-    XboxController subsystem_controller = new XboxController(1);
-
-    public SendableChooser<Command> sendable_chooser = new SendableChooser<>();
+    CommandXboxController driver_controller = new CommandXboxController(0);
+    CommandXboxController subsystem_controller = new CommandXboxController(1);
 
     public RobotContainer() {
         configureButtonBindings();
@@ -34,10 +35,10 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // Drive Control
-        robot_drive.setDefaultCommand(
+        drive_subsystem.setDefaultCommand(
                 new RunCommand(
                         () -> {
-                            robot_drive.drive(
+                            drive_subsystem.drive(
                                     -MathUtil.applyDeadband(driver_controller.getLeftY() * 0.75,
                                             SwerveConstants.DRIVE_DEADBAND),
                                     -MathUtil.applyDeadband(driver_controller.getLeftX() * 0.75,
@@ -46,54 +47,27 @@ public class RobotContainer {
                                             SwerveConstants.DRIVE_DEADBAND),
                                     field_centric, true);
 
-                            if (driver_controller.getXButtonReleased()) {
-                                robot_drive.zero_heading();
-                            }
+                            driver_controller.x().onTrue(runOnce(() -> {
+                                drive_subsystem.zero_heading();
+                            }, drive_subsystem));
                         },
 
-                        robot_drive));
+                        drive_subsystem));
 
-        // Coral Intake
-        coral_intake.setDefaultCommand(new RunCommand(
-                () -> {
-                    if (driver_controller.getAButtonReleased()) {
-                        coral_intake.pivot();
-                    } else if (driver_controller.getBButtonReleased()) {
-                        coral_intake.intake();
-                    }
-                }, coral_intake));
-
-        // Algae Intake
-        // algae_intake.setDefaultCommand(new RunCommand(
-        // () -> {
-        // if (driver_controller.getXButtonReleased()) {
-        // algae_intake.intake();
-        // } else if (driver_controller.getYButtonReleased()) {
-        // algae_intake.pivot();
-        // }
-        // }, algae_intake));
-
-        // Elevator Control
-        elevator.setDefaultCommand(new RunCommand(() -> {
-            if (driver_controller.getLeftBumperButton()) {
-                elevator.move_down();
-            } else if (driver_controller.getRightBumperButton()) {
-                elevator.pid_control(68);
-            } else {
-                elevator.stop();
-            }
-        }, elevator));
+        driver_controller.rightBumper().onTrue(scoring_commands.l3_score());
+        driver_controller.leftBumper().onTrue(scoring_commands.l2_score());
+        driver_controller.a().onTrue(scoring_commands.get_coral());
     }
 
     public DriveSubsystem getAutonomousCommand() {
-        return robot_drive;
+        return drive_subsystem;
     }
 
-    public Elevator getElevator() {
-        return elevator;
+    public ElevatorSubsystem getElevator_subsystem() {
+        return elevator_subsystem;
     }
 
-    public CoralIntake getCoralIntak() {
-        return coral_intake;
+    public CoralSubsystem getCoralIntak() {
+        return coral_subsystem;
     }
 }
