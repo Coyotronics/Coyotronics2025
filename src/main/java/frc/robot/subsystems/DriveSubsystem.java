@@ -5,6 +5,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -27,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotMeasurements;
 import frc.robot.Constants.SwerveConstants;
 import frc.utils.SwerveUtils;
-
+import frc.robot.LimelightHelpers;
 import frc.robot.Telemetery;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -61,15 +63,18 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter rot_limiter = new SlewRateLimiter(RobotMeasurements.ROTATIONAL_SLEW_RATE);
     private double prev_time = WPIUtilJNI.now() * 1e-6;
 
-    SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+    private SwerveDrivePoseEstimator pose_estimator = new SwerveDrivePoseEstimator(
             RobotMeasurements.DRIVE_KINEMATICS,
-            Rotation2d.fromDegrees(get_angle()),
+            gyro.getRotation2d(),
             new SwerveModulePosition[] {
                     front_left.get_position(),
                     front_right.get_position(),
                     back_left.get_position(),
                     back_right.get_position()
-            });
+            },
+            new Pose2d(),
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     private Field2d field = new Field2d();
 
@@ -101,31 +106,45 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this);
 
-        SmartDashboard.putData("Field", field);
-        gyro.reset();
+        SmartDashboard.putData(field);
+        zero_heading();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro Rotation",gyro.getYaw().getValueAsDouble());
-        odometry.update(
-                Rotation2d.fromDegrees(get_angle()),
-                new SwerveModulePosition[] {
-                        front_left.get_position(),
-                        front_right.get_position(),
-                        back_left.get_position(),
-                        back_right.get_position()
-                });
+        SmartDashboard.putNumber("Gyro Rotation", gyro.getYaw().getValueAsDouble());
 
-        field.setRobotPose(odometry.getPoseMeters());
+        pose_estimator.update(gyro.getRotation2d(), new SwerveModulePosition[] {
+                front_left.get_position(),
+                front_right.get_position(),
+                back_left.get_position(),
+                back_right.get_position()
+        });
+
+        boolean reject_update = false;
+        LimelightHelpers.SetRobotOrientation("limelight",
+                pose_estimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if (Math.abs(get_turn_rate()) > 720) {
+            reject_update = true;
+        }
+        if (mt2.tagCount == 0) {
+            reject_update = true;
+        }
+        if (!reject_update) {
+            pose_estimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            pose_estimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+        }
+
+        field.setRobotPose(get_pose());
     }
 
     public Pose2d get_pose() {
-        return odometry.getPoseMeters();
+        return pose_estimator.getEstimatedPosition();
     }
 
     public void reset_odometry(Pose2d pose) {
-        odometry.resetPosition(
+        pose_estimator.resetPosition(
                 Rotation2d.fromDegrees(get_angle()),
                 new SwerveModulePosition[] {
                         front_left.get_position(),
@@ -272,16 +291,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public double get_angle() {
-        //Imma find the boolean later
-
-        if(DriverStation.getAlliance().get()!=Alliance.Red)
-        {
-            return (gyro.getYaw().getValueAsDouble()); 
-        }
-        else
-        {   
+        if (DriverStation.getAlliance().get() != Alliance.Red) {
+            return (gyro.getYaw().getValueAsDouble());
+        } else {
             return -(gyro.getYaw().getValueAsDouble());
         }
-
     }
 }
