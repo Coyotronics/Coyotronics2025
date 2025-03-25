@@ -40,7 +40,7 @@ public class AlignAprilTag extends Command {
         theta_error = tag_angle;
 
         drive_subsystem.drive(LimelightConstants.x_p * x_error, LimelightConstants.y_p * y_error,
-                LimelightConstants.theta_p * theta_error, false, false);
+                LimelightConstants.theta_p * theta_error, false, true);
 
         if (Math.abs(x_error) < LimelightConstants.x_tolerance_meters) {
             x_done = true;
