@@ -85,19 +85,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        DriveSubsystem drive = robot_container.getAutonomousCommand();
-        // placeholder
+       autonomous_command = robot_container.getAutonomousCommand();
 
-        Command swerveMobility = new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    drive.drive_robot_relative(new ChassisSpeeds(0.5, 0.0, 0.0));
-                }, drive),
-                new WaitCommand(2),
-                new InstantCommand(() -> {
-                    drive.drive_robot_relative(new ChassisSpeeds(0.0, 0.0, 0.0));
-                }, drive));
-
-        swerveMobility.schedule();
+       if(autonomous_command != null)
+       {
+        autonomous_command.schedule();
+       }
     }
 
     /** This function is called periodically during autonomous. */
