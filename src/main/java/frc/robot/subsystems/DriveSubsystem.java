@@ -52,6 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final Pigeon2 gyro = new Pigeon2(34);
 
+
     private double current_rotation = 0.0;
     private double current_translation_dir = 0.0;
     private double current_translation_mag = 0.0;
@@ -76,6 +77,8 @@ public class DriveSubsystem extends SubsystemBase {
     private Field2d field = new Field2d();
 
     public DriveSubsystem() {
+        int[] validIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,26,17,18,19,20,21,22};
+        LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
         RobotConfig config = null;
         try {
             config = RobotConfig.fromGUISettings();
@@ -109,8 +112,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro Rotation", gyro.getYaw().getValueAsDouble());
+        boolean reject_update = false;
 
+        SmartDashboard.putNumber("Gyro Rotation", gyro.getYaw().getValueAsDouble());
+        SmartDashboard.putNumber("X Position", get_pose().getX());
+        SmartDashboard.putNumber("Y Position", get_pose().getY());
         pose_estimator.update(gyro.getRotation2d(), new SwerveModulePosition[] {
                 front_left.get_position(),
                 front_right.get_position(),
@@ -118,10 +124,10 @@ public class DriveSubsystem extends SubsystemBase {
                 back_right.get_position()
         });
 
-        boolean reject_update = false;
         LimelightHelpers.SetRobotOrientation("limelight",
                 pose_estimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+
         if (Math.abs(get_turn_rate()) > 720) {
             reject_update = true;
         }
@@ -134,6 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         field.setRobotPose(get_pose());
+        SmartDashboard.putBoolean("Limelight Pose", !reject_update);
     }
 
     public Pose2d get_pose() {
