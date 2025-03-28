@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -26,10 +27,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.SwerveUtils;
 import frc.robot.LimelightHelpers;
+import frc.robot.constants.AutoConstants;
 import frc.robot.constants.RobotMeasurements;
-import frc.robot.constants.SwerveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
+    private final boolean use_localization = true;
+
     private final MAXSwerveModule front_left = new MAXSwerveModule(
             RobotMeasurements.FRONT_LEFT_DRIVING_CAN_ID,
             RobotMeasurements.FRONT_LEFT_TURNING_CAN_ID,
@@ -52,7 +55,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     private final Pigeon2 gyro = new Pigeon2(34);
 
-
     private double current_rotation = 0.0;
     private double current_translation_dir = 0.0;
     private double current_translation_mag = 0.0;
@@ -74,11 +76,19 @@ public class DriveSubsystem extends SubsystemBase {
             VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
             VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
+    private SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+            RobotMeasurements.DRIVE_KINEMATICS,
+            Rotation2d.fromDegrees(get_angle()),
+            new SwerveModulePosition[] {
+                    front_left.get_position(),
+                    front_right.get_position(),
+                    back_left.get_position(),
+                    back_right.get_position()
+            });
+
     private Field2d field = new Field2d();
 
     public DriveSubsystem() {
-        int[] validIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,26,17,18,19,20,21,22};
-        LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
         RobotConfig config = null;
         try {
             config = RobotConfig.fromGUISettings();
@@ -92,10 +102,9 @@ public class DriveSubsystem extends SubsystemBase {
                 this::get_robot_relative_speeds,
                 (speeds, feedforwards) -> drive_robot_relative(speeds),
                 new PPHolonomicDriveController(
-                        new PIDConstants(SwerveConstants.DRIVING_P, SwerveConstants.DRIVING_I,
-                                SwerveConstants.DRIVING_D),
-                        new PIDConstants(SwerveConstants.TURNING_P, SwerveConstants.TURNING_I,
-                                SwerveConstants.TURNING_D)),
+                        new PIDConstants(AutoConstants.drive_p, AutoConstants.drive_i, AutoConstants.drive_d),
+                        new PIDConstants(AutoConstants.theta_p, AutoConstants.theta_i,
+                                AutoConstants.theta_d)),
                 config,
                 () -> {
                     var alliance = DriverStation.getAlliance();
@@ -117,26 +126,38 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Gyro Rotation", gyro.getYaw().getValueAsDouble());
         SmartDashboard.putNumber("X Position", get_pose().getX());
         SmartDashboard.putNumber("Y Position", get_pose().getY());
-        pose_estimator.update(gyro.getRotation2d(), new SwerveModulePosition[] {
-                front_left.get_position(),
-                front_right.get_position(),
-                back_left.get_position(),
-                back_right.get_position()
-        });
 
-        LimelightHelpers.SetRobotOrientation("limelight",
-                pose_estimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if (!use_localization) {
+            odometry.update(Rotation2d.fromDegrees(get_angle()),
+                    new SwerveModulePosition[] {
+                            front_left.get_position(),
+                            front_right.get_position(),
+                            back_left.get_position(),
+                            back_right.get_position()
+                    });
+        } else {
+            pose_estimator.update(gyro.getRotation2d(), new SwerveModulePosition[] {
+                    front_left.get_position(),
+                    front_right.get_position(),
+                    back_left.get_position(),
+                    back_right.get_position()
+            });
 
-        if (Math.abs(get_turn_rate()) > 720) {
-            reject_update = true;
-        }
-        if (mt2.tagCount == 0) {
-            reject_update = true;
-        }
-        if (!reject_update) {
-            pose_estimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-            pose_estimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+            LimelightHelpers.SetRobotOrientation("limelight",
+                    pose_estimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0,
+                    0);
+            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+
+            if (Math.abs(get_turn_rate()) > 720) {
+                reject_update = true;
+            }
+            if (mt2.tagCount == 0) {
+                reject_update = true;
+            }
+            if (!reject_update) {
+                pose_estimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                pose_estimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+            }
         }
 
         field.setRobotPose(get_pose());
@@ -144,19 +165,39 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Pose2d get_pose() {
-        return pose_estimator.getEstimatedPosition();
+        Pose2d ret = null;
+
+        if (!use_localization) {
+            ret = odometry.getPoseMeters();
+        } else {
+            ret = pose_estimator.getEstimatedPosition();
+        }
+
+        return ret;
     }
 
     public void reset_odometry(Pose2d pose) {
-        pose_estimator.resetPosition(
-                Rotation2d.fromDegrees(get_angle()),
-                new SwerveModulePosition[] {
-                        front_left.get_position(),
-                        front_right.get_position(),
-                        back_left.get_position(),
-                        back_right.get_position()
-                },
-                pose);
+        if (!use_localization) {
+            odometry.resetPosition(
+                    Rotation2d.fromDegrees(get_angle()),
+                    new SwerveModulePosition[] {
+                            front_left.get_position(),
+                            front_right.get_position(),
+                            back_left.get_position(),
+                            back_right.get_position()
+                    },
+                    pose);
+        } else {
+            pose_estimator.resetPosition(
+                    Rotation2d.fromDegrees(get_angle()),
+                    new SwerveModulePosition[] {
+                            front_left.get_position(),
+                            front_right.get_position(),
+                            back_left.get_position(),
+                            back_right.get_position()
+                    },
+                    pose);
+        }
     }
 
     public SwerveModuleState[] get_module_states() {

@@ -23,7 +23,7 @@ public class CoralScoring {
         return sequence(
             coral_subsystem.coral_intake(),
             coral_subsystem.pivot_to_shoot(),
-            elevator_subsystem.pid_controll(40.8),
+            elevator_subsystem.pid_controll(21),
             coral_subsystem.coral_outtake(),
             waitSeconds(1),
             coral_subsystem.coral_stop()
@@ -34,7 +34,7 @@ public class CoralScoring {
         return sequence(
             coral_subsystem.coral_intake(),
             coral_subsystem.pivot_to_shoot(),
-            elevator_subsystem.pid_controll(68),
+            elevator_subsystem.pid_controll(61.5),
             coral_subsystem.coral_outtake(),
             waitSeconds(1),
             coral_subsystem.coral_stop()

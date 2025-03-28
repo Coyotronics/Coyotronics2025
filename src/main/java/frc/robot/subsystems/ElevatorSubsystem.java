@@ -25,7 +25,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         left_motor = new SparkMax(SubsystemConstants.ELEVATOR_LEFT_MOTOR_ID, MotorType.kBrushless);
 
         SparkMaxConfig config = new SparkMaxConfig();
-        config.smartCurrentLimit(30).idleMode(IdleMode.kBrake);
+        config.smartCurrentLimit(30).idleMode(IdleMode.kCoast);
 
         right_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         left_motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
