@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -146,7 +148,17 @@ public class DriveSubsystem extends SubsystemBase {
             LimelightHelpers.SetRobotOrientation("limelight",
                     pose_estimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0,
                     0);
-            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+                
+            Optional<Alliance> alliance = DriverStation.getAlliance();
+            LimelightHelpers.PoseEstimate mt2 = null;
+
+            if (alliance.isPresent()) {
+                if (alliance.get() == Alliance.Red) {
+                    mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
+                } else {
+                    mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+                }
+            }
 
             if (Math.abs(get_turn_rate()) > 720) {
                 reject_update = true;
@@ -172,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
         } else {
             ret = pose_estimator.getEstimatedPosition();
         }
-
+  
         return ret;
     }
 

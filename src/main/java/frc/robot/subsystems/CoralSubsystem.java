@@ -48,7 +48,7 @@ public class CoralSubsystem extends SubsystemBase {
 
     public Command pivot_to_shoot() {
         return parallel(
-            runOnce(() -> coral_pivot_motor.set(-0.2)),
+            runOnce(() -> coral_pivot_motor.set(-0.15)),
             waitUntil(() -> get_pivot_position() <= 0.3).andThen(() -> coral_pivot_motor.set(0))
         ).onlyIf(() -> get_pivot_position() > 0.3);
     }
