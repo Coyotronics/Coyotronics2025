@@ -8,8 +8,6 @@ import frc.robot.constants.SubsystemConstants;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import javax.lang.model.util.ElementScanner14;
-
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
